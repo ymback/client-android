@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:settings="http://schemas.android.com/apk/res-auto"
+    android:title="@string/setting">
+    <PreferenceCategory
+        android:title="基本设置">
+        <ListPreference
+            android:key="@string/setting_font_size"
+            android:title="字体大小"
+            android:entries="@array/font_size_preference_key"
+            android:entryValues="@array/font_size_preference_value"
+            android:defaultValue="16"
+            android:summary="%s" />
+        <ListPreference
+            android:key="@string/setting_line_spacing"
+            android:title="行间间距"
+            android:entries="@array/line_spacing_preference_key"
+            android:entryValues="@array/line_spacing_preference_value"
+            android:defaultValue="4"
+            android:enabled="false"
+            android:summary="%s" />
+        <SwitchPreference
+            android:key="@string/setting_auto_load_bookmark"
+            android:defaultValue="true"
+            android:title="自动载入书签" />
+        <SwitchPreference
+            android:key="@string/setting_screen_always"
+            android:defaultValue="false"
+            android:title="屏幕常亮" />
+        <SwitchPreference
+            android:key="@string/setting_night_model"
+            android:defaultValue="false"
+            android:title="夜间模式" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="其他设置">
+        <Preference
+            android:key="@string/setting_check_version"
+            android:enabled="false"
+            android:title="检查更新">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://ltype.me/apk"/>
+        </Preference>
+
+        <Preference
+            android:key="@string/setting_clear_cache"
+            android:enabled="false"
+            android:title="清理缓存">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://ltype.me/"/>
+        </Preference>
+        <Preference
+            android:key="@string/setting_clear_data"
+            android:enabled="false"
+            android:title="清空数据">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="http://ltype.me/"/>
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

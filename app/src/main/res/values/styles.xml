@@ -1,0 +1,28 @@
+<resources>
+    <style name="AppTheme" parent="AppTheme.Base">
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <item name="colorAccent">@color/color_accent</item>
+    </style>
+
+    <style name="AppTheme.Setting" parent="Theme.AppCompat.Light.DarkActionBar" >
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <!--<item name="colorAccent">@color/color_accent</item>-->
+
+    </style>
+
+    <style name="AppTheme.Base" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
+        <item name="singleAccount">true</item>
+        <item name="drawerType">@integer/DRAWERTYPE_ACCOUNTS</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <!--<item name="multipaneSupport">true</item>-->
+        <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+
+    </style>
+
+    <style name="AppTheme.Tab" parent="AppTheme.Base">
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+    </style>
+</resources>

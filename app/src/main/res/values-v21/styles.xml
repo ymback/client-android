@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="AppTheme.Base" >
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <!--<item name="colorAccent">@color/color_accent</item>-->
+        <item name="multipaneSupport">true</item>
+        <item name="singleAccount">true</item>
+    </style>
+
+    <style name="AppTheme.Setting" parent="Theme.AppCompat.Light.DarkActionBar" >
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_primary_dark</item>
+        <!--<item name="colorAccent">@color/color_accent</item>-->
+
+    </style>
+
+    <style name="AppTheme.Base" parent="AppTheme.ToolBar">
+    </style>
+
+    <style name="AppTheme.ToolBar" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+
+    </style>
+
+    <style name="AppTheme.Tab" parent="AppTheme.ToolBar">
+        <item name="android:elevation">@dimen/tab_elevationp</item>
+
+        <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_dark</item>
+    </style>
+
+    <style name="ThemeOverlay.SwitchBar" parent="@android:style/ThemeOverlay">
+        <!-- Used by controls, e.g. CheckBox, ProgressBar, etc. -->
+        <item name="android:colorAccent">@color/switch_accent_color</item>
+    </style>
+</resources>
