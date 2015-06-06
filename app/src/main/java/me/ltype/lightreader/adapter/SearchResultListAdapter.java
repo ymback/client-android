@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -40,6 +41,7 @@ import me.ltype.lightreader.activity.MainActivity;
 import me.ltype.lightreader.constant.Constants;
 import me.ltype.lightreader.model.Book;
 import me.ltype.lightreader.model.Volume;
+import me.ltype.lightreader.request.DownloadRequest;
 import me.ltype.lightreader.task.DownImgTask;
 import me.ltype.lightreader.task.DownloadTask;
 import me.ltype.lightreader.util.ApiUtil;
@@ -61,12 +63,14 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
 
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
-            if(msg.what == 4662){
-                notifyDataSetChanged();
-                progress.cancel();
-                progressBar.cancel();
+            if(msg.what == Constants.PROGRESS_CANCEL){
+                Log.e(LOG_TAG, "handleMessage");
+                if (progress != null && progress.isShowing())
+                    progress.dismiss();
+                if (progressBar != null && progressBar.isShowing())
+                    progressBar.dismiss();
             }
-        };
+        }
     };
 
     public SearchResultListAdapter(Activity activity, String query) {
@@ -81,17 +85,13 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
         progress.setCancelable(true);
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progress.show();
-        Log.e(LOG_TAG, ApiUtil.API_PATH + "search/" + Util.encodeUrl(query) + "/1/");
         if (Util.isConnect(activity)) {
-//            new SearchTask().execute(query);
             StringRequest jsonObjectRequest = new StringRequest(
                 Request.Method.GET,
                 ApiUtil.API_PATH + "search/" + Util.encodeUrl(query) + "/1/",
-//                null,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("TAG", response.toString());
                         JSONArray jsonArray = JSON.parseObject(response).getJSONArray("volResult");
                         for (int i = 0; i < jsonArray.size(); i++) {
                             Book book = ApiUtil.getBook(jsonArray.getJSONObject(i).toString());
@@ -99,15 +99,16 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
                             Volume volume = ApiUtil.getVolByJsonObj(jsonArray.getJSONObject(i));
                             volumeList.add(volume);
                         }
-                        mHandler.sendEmptyMessage(4662);
+                        notifyDataSetChanged();
+                        mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e("TAG", error.getMessage(), error);
-                        mHandler.sendEmptyMessage(4662);
-                    }}) {
+                        mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
+                }}) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         return ApiUtil.getApiHeader();
@@ -115,17 +116,7 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
                 };
             mQueue.add(jsonObjectRequest);
         } else {
-            mMaterialDialog = new MaterialDialog(activity)
-                    .setTitle("错误")
-                    .setMessage("未连接网络")
-                    .setPositiveButton("确定", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mMaterialDialog.dismiss();
-                        }
-                    });
-            mHandler.sendEmptyMessage(4672);
-            mMaterialDialog.show();
+            Toast.makeText(activity, "网络错误", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -208,49 +199,12 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
         return bookList.size();
     }
 
-    private class SearchTask extends AsyncTask<String, Integer, String> {
-        private String LOG_TAG = "SearchTask";
-
-        @Override
-        protected String doInBackground(String... urls) {
-            return ApiUtil.search(urls[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            JSONArray jsonArray = JSON.parseObject(result).getJSONArray("volResult");
-            for (int i = 0; i < jsonArray.size(); i++) {
-                Book book = ApiUtil.getBook(jsonArray.getJSONObject(i).toString());
-                bookList.add(book);
-                Volume volume = ApiUtil.getVolByJsonObj(jsonArray.getJSONObject(i));
-                volumeList.add(volume);
-            }
-            mHandler.sendEmptyMessage(4662);
-        }
-    }
-
-
     private void startDown(Volume volume, Book book) {
-        progressBar.setTitle("下载中...");
-        progressBar.setMessage(book.getName() + "\n" + volume.getName());
+        progressBar.setTitle(book.getName() + "\n" + volume.getName());
+        progressBar.setMessage("下载中...");
         progressBar.setIndeterminate(true);
-        progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressBar.show();
-        StringBuffer bookJson = new StringBuffer();
-        bookJson.append("{")
-                .append("\"book_id\":" + book.getId() + ",")
-                .append("\"author\":" + "\"" + book.getAuthor() + "\",")
-                .append("\"illustor\":" + "\"" + book.getIllustrator() + "\",")
-                .append("\"publisher\":" + "\"" + book.getPublisher() + "\",")
-                .append("\"name\":" + "\"" + book.getName() + "\",")
-                .append("\"cover\":" + "\"" + Util.toCover(volume.getId(), Constants.SITE + book.getCover()) + "\",")
-                .append("\"description\":" + "\"" + book.getDescription() + "\"")
-                .append("}");
-        new DownloadTask(mHandler).execute(volume.getId(), bookJson.toString());
-    }
-
-    private void asyncLoadImage(ImageView imageView, String path) {
-        DownImgTask task = new DownImgTask(imageView);
-        task.execute(path);
+        new DownloadRequest(mQueue, mHandler).downBook(volume.getId());
     }
 }

@@ -4,23 +4,35 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.GpsStatus;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightreader.R;
@@ -28,9 +40,12 @@ import me.ltype.lightreader.activity.MainActivity;
 import me.ltype.lightreader.constant.Constants;
 import me.ltype.lightreader.model.Book;
 import me.ltype.lightreader.model.Volume;
+import me.ltype.lightreader.request.DownloadRequest;
 import me.ltype.lightreader.task.DownImgTask;
 import me.ltype.lightreader.task.DownloadTask;
 import me.ltype.lightreader.util.ApiUtil;
+import me.ltype.lightreader.util.FileUtils;
+import me.ltype.lightreader.util.HttpUtil;
 import me.ltype.lightreader.util.Util;
 
 /**
@@ -46,17 +61,17 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
     private ProgressDialog progress;
     private ProgressDialog progressBar;
     private RequestQueue mQueue;
+
     private Handler mHandler = new Handler(){
-        @Override
-        public void handleMessage(android.os.Message msg) {
-            if(msg.what == 4662){
-                bookList = ApiUtil.getLastBook();
-                volumeList = ApiUtil.getLastVolume();
-                notifyDataSetChanged();
-                progress.cancel();
-                progressBar.cancel();
+            @Override
+            public void handleMessage(android.os.Message msg) {
+            if(msg.what == Constants.PROGRESS_CANCEL){
+                if (progress != null && progress.isShowing())
+                    progress.dismiss();
+                if (progressBar != null && progressBar.isShowing())
+                    progressBar.dismiss();
             }
-        };
+        }
     };
 
     public LastUpdateAdapter(Activity activity) {
@@ -73,24 +88,48 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
         progress.show();
 
         if (Util.isConnect(activity)) {
-            new Thread(){
-                public void run() {
-                    ApiUtil.initLatestPost();
-                    mHandler.sendEmptyMessage(4662);
-                }
-            }.start();
-        } else {
-            mMaterialDialog = new MaterialDialog(activity)
-                    .setTitle("错误")
-                    .setMessage("未连接网络")
-                    .setPositiveButton("确定", new View.OnClickListener() {
+            StringRequest stringRequest = new StringRequest(
+                    Request.Method.GET,
+                    ApiUtil.API_PATH + "latestPost",
+                    new Response.Listener<String>() {
                         @Override
-                        public void onClick(View v) {
-                            mMaterialDialog.dismiss();
+                        public void onResponse(String response) {
+                            JSONArray jsonArray = JSON.parseObject(response).getJSONArray("latestPost");
+                            for (int i = 0; i < jsonArray.size(); i++) {
+                                JSONObject json = jsonArray.getJSONObject(i);
+                                Volume volume = new Volume();
+                                volume.setIndex(json.getString("vol_number"));
+                                volume.setBookId(json.getString("series_id"));
+                                volume.setId(json.getString("id"));
+                                volume.setHeader(json.getString("vol_number"));
+                                volume.setName(json.getString("vol_title"));
+                                volume.setCover(json.getString("vol_cover"));
+                                volume.setDescription(json.getString("vol_desc"));
+                                volumeList.add(volume);
+
+                                Book book = new Book();
+                                book.setAuthor(json.getString("novel_author"));
+                                book.setIllustrator(json.getString("novel_illustor"));
+                                book.setName(json.getString("novel_title"));
+                                bookList.add(book);
+                            }
+                            notifyDataSetChanged();
                         }
-                    });
-            mHandler.sendEmptyMessage(4662);
-            mMaterialDialog.show();
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.e(LOG_TAG, "onErrorResponse:" + error);
+                        }}) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    return ApiUtil.getApiHeader();
+                }
+            };
+            mQueue.add(stringRequest);
+            mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
+        } else {
+            Toast.makeText(activity, "网络错误", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -173,26 +212,12 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
     }
 
     private void startDown(Volume volume, Book book) {
-        progressBar.setTitle("下载中...");
-        progressBar.setMessage(book.getName() + "\n" + volume.getName());
+        progressBar.setTitle(book.getName() + "\n" + volume.getName());
+        progressBar.setMessage("下载中...");
         progressBar.setIndeterminate(true);
-        progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setCancelable(false);
         progressBar.show();
-        StringBuffer bookJson = new StringBuffer();
-        bookJson.append("{")
-                .append("\"book_id\":" + volume.getBookId() + ",")
-                .append("\"author\":" + "\"" + book.getAuthor() + "\",")
-                .append("\"illustor\":" + "\"" + book.getIllustrator() + "\",")
-                .append("\"publisher\":" + "\"" + book.getPublisher() + "\",")
-                .append("\"name\":" + "\"" + book.getName() + "\",")
-                .append("\"cover\":" + "\"" + Util.toCover(volume.getId(), Constants.SITE + volume.getCover()) + "\",")
-                .append("\"description\":" + "\"" + volume.getDescription() + "\"")
-                .append("}");
-        new DownloadTask(mHandler).execute(volume.getId(), bookJson.toString());
-    }
-
-    private void asyncLoadImage(ImageView imageView, String path) {
-        DownImgTask task = new DownImgTask(imageView);
-        task.execute(path);
+        new DownloadRequest(mQueue, mHandler).downBook(volume.getId());
     }
 }

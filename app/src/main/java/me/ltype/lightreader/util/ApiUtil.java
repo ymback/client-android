@@ -29,23 +29,10 @@ import me.ltype.lightreader.model.Volume;
 public class ApiUtil {
     private static String LOG_TAG = "ApiUtil";
 	public static String API_PATH = "http://novel.macroth.com/api_node/";
-	public static String LATEST_POST = "latestPost";
-	public final String SEARCH = "bookIsFavorite";
 
     private static List<String> imgList = new ArrayList<>();
     private static List<Book> lastBook = new ArrayList<>();
     private static List<Volume> lastVolume = new ArrayList<>();
-	
-	public static String search(String keyWord) {
-		String url = null;
-		try {
-			url = ApiUtil.API_PATH + "search/" + URLEncoder.encode(keyWord, "UTF-8") + "/1/";
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		String response = HttpUtil.doGetByApi(url);
-		return response.toString();
-	}
 	
 	public static void downBook(String volumeId, String bookJson) {
         String url = ApiUtil.API_PATH + "vol/" + volumeId + "/";
@@ -101,6 +88,21 @@ public class ApiUtil {
 		volume.setDescription(json.getString("vol_desc"));
 		return volume;
 	}
+
+    public static String getBookJson(JSONObject jsonObj) {
+        JSONObject json = jsonObj.getJSONArray("volDetail").getJSONObject(0);
+        StringBuffer bookJson = new StringBuffer();
+        bookJson.append("{")
+                .append("\"book_id\":" + json.getString("series_id") + ",")
+                .append("\"author\":" + "\"" + json.getString("novel_author") + "\",")
+                .append("\"illustor\":" + "\"" + json.getString("novel_illustor") + "\",")
+                .append("\"publisher\":" + "\"" + json.getString("novel_pub") + "\",")
+                .append("\"name\":" + "\"" + json.getString("novel_title") + "\",")
+                .append("\"cover\":" + "\"" + Util.toCover(json.getString("id"), Constants.SITE + json.getString("vol_cover")) + "\",")
+                .append("\"description\":" + "\"" + json.getString("vol_desc") + "\"")
+                .append("}");
+        return bookJson.toString();
+    }
 
     public static String getVolJson(JSONObject jsonObj) {
         JSONObject json = jsonObj.getJSONArray("volDetail").getJSONObject(0);
@@ -167,38 +169,6 @@ public class ApiUtil {
         contentJson.replace(contentJson.length() - 1, contentJson.length(), "");
         contentJson.append("]");
         return contentJson.toString();
-    }
-
-    public static void initLatestPost() {
-        String url = ApiUtil.API_PATH + "latestPost" ;
-        String content = HttpUtil.doGetByApi(url);
-        JSONArray jsonArray = JSON.parseObject(content).getJSONArray("latestPost");
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject json = jsonArray.getJSONObject(i);
-            Volume volume = new Volume();
-            volume.setIndex(json.getString("vol_number"));
-            volume.setBookId(json.getString("series_id"));
-            volume.setId(json.getString("id"));
-            volume.setHeader(json.getString("vol_number"));
-            volume.setName(json.getString("vol_title"));
-            volume.setCover(json.getString("vol_cover"));
-            volume.setDescription(json.getString("vol_desc"));
-            lastVolume.add(volume);
-
-            Book book = new Book();
-            book.setAuthor(json.getString("novel_author"));
-            book.setIllustrator(json.getString("novel_illustor"));
-            book.setName(json.getString("novel_title"));
-            lastBook.add(book);
-        }
-    }
-
-    public static List<Book> getLastBook() {
-        return lastBook;
-    }
-
-    public static List<Volume> getLastVolume() {
-        return lastVolume;
     }
 
     public static Map<String, String> getApiHeader() {

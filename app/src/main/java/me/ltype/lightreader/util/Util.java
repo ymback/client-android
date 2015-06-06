@@ -15,6 +15,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,6 +106,15 @@ public class Util {
         return result;
     }
 
+    public static List<String> findAll(String p, String m) {
+        List<String> list = new ArrayList();
+        Pattern pattern = Pattern.compile(p);
+        Matcher matcher = pattern.matcher(m);
+        while (matcher.find())
+            list.add(matcher.group());
+        return list;
+    }
+
     public static String md5(String str){
         String reStr = null;
         try {
@@ -152,37 +163,6 @@ public class Util {
         }
         return false;
     }
-
-    /*public static boolean showDialog(View view, String title, String message, String PositiveBut) {
-        MaterialDialog mMaterialDialog;
-        mMaterialDialog= new MaterialDialog(view.getContext())
-                .setTitle("下载")
-                .setMessage("确定下载" + bookList.get(i).getName() + volumeList.get(i).getHeader() + volumeList.get(i).getName() + "?")
-                .setPositiveButton("确定", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        StringBuffer bookJson = new StringBuffer();
-                        bookJson.append("{")
-                                .append("\"book_id\":" + bookList.get(i).getId() + ",")
-                                .append("\"author\":" + "\"" + bookList.get(i).getAuthor() + "\",")
-                                .append("\"illustor\":" + "\"" + bookList.get(i).getIllustrator() + "\",")
-                                .append("\"publisher\":" + "\"" + bookList.get(i).getPublisher() + "\",")
-                                .append("\"name\":" + "\"" + bookList.get(i).getName() + "\",")
-                                .append("\"cover\":" + "\"" + Util.toCover(volumeList.get(i).getId(), Constants.SITE + bookList.get(i).getCover()) + "\",")
-                                .append("\"description\":" + "\"" + bookList.get(i).getDescription() + "\"")
-                                .append("}");
-                        startDown(volumeList.get(i).getId(), bookJson.toString());
-                        mMaterialDialog.dismiss();
-                    }
-                })
-                .setNegativeButton("取消", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mMaterialDialog.dismiss();
-                    }
-                });
-        mMaterialDialog.show();
-    }*/
 
     public static String encodeUrl(String str) {
         try {

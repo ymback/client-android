@@ -9,4 +9,6 @@ public interface Constants {
     String SITE = "http://lknovel.lightnovel.cn";
     String API_KEY = "97F2089A6ACCB571694DEA577CFE11DD";
     String API_TIME = "1432577669309";
+
+    int PROGRESS_CANCEL = 0001;
 }

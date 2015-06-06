@@ -1,6 +1,7 @@
 package me.ltype.lightreader.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
 
@@ -214,6 +215,26 @@ public class FileUtils {
         try {
             outputStream = new FileOutputStream(path + File.separator + "img" +  File.separator + fileName + url.substring(url.lastIndexOf(".")));
             outputStream.write(data);
+            outputStream.flush();
+        } catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        } finally {
+            try {
+                if (outputStream != null)
+                    outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return fileName;
+    }
+
+    public static String storeImg(String url, String path, Bitmap bitmap) {
+        String fileName = Util.md5(url);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(path + File.separator + "img" +  File.separator + fileName + url.substring(url.lastIndexOf(".")));
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             outputStream.flush();
         } catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
