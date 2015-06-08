@@ -42,8 +42,6 @@ import me.ltype.lightreader.constant.Constants;
 import me.ltype.lightreader.model.Book;
 import me.ltype.lightreader.model.Volume;
 import me.ltype.lightreader.request.DownloadRequest;
-import me.ltype.lightreader.task.DownImgTask;
-import me.ltype.lightreader.task.DownloadTask;
 import me.ltype.lightreader.util.ApiUtil;
 import me.ltype.lightreader.util.Util;
 

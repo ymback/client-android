@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.View;
 
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
@@ -57,9 +59,12 @@ public class MainActivity extends MaterialNavigationDrawer {
             mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
+                    query = query.trim();
                     Log.d(LOG_TAG + "onQueryTextSubmit", query);
 //                    if (mSearchResultFragment == null) mSearchResultFragment = new SearchResultFragment();
-                    openChildFragment(new SearchResultFragment(query), "搜索:" + query);
+
+                    getIntent().putExtra("query", query);
+                    openChildFragment(new SearchResultFragment(), "搜索:" + query);
                     mSearchView.onActionViewCollapsed();
                     return true;
                 }
@@ -70,12 +75,9 @@ public class MainActivity extends MaterialNavigationDrawer {
                     return true;
                 }
             });
-            final SearchView.OnCloseListener closeListener = new SearchView.OnCloseListener() {
-                @Override
-                public boolean onClose() {
-                    mSearchView.onActionViewCollapsed();
-                    return false;
-                }
+            final SearchView.OnCloseListener closeListener = () -> {
+                mSearchView.onActionViewCollapsed();
+                return false;
             };
         }
 

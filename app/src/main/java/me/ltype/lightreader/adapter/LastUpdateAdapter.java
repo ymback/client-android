@@ -41,11 +41,7 @@ import me.ltype.lightreader.constant.Constants;
 import me.ltype.lightreader.model.Book;
 import me.ltype.lightreader.model.Volume;
 import me.ltype.lightreader.request.DownloadRequest;
-import me.ltype.lightreader.task.DownImgTask;
-import me.ltype.lightreader.task.DownloadTask;
 import me.ltype.lightreader.util.ApiUtil;
-import me.ltype.lightreader.util.FileUtils;
-import me.ltype.lightreader.util.HttpUtil;
 import me.ltype.lightreader.util.Util;
 
 /**
@@ -81,13 +77,14 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
         progress = new ProgressDialog(activity);
         progressBar = new ProgressDialog(activity);
 
-        progress.setTitle("更新中...");
-        progress.setMessage("获取最新数据");
-        progress.setCancelable(true);
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.show();
+        Log.e(LOG_TAG, progress.isShowing() + "");
 
         if (Util.isConnect(activity)) {
+            progress.setTitle("更新中...");
+            progress.setMessage("获取最新数据");
+            progress.setCancelable(true);
+            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progress.show();
             StringRequest stringRequest = new StringRequest(
                     Request.Method.GET,
                     ApiUtil.API_PATH + "latestPost",
@@ -114,12 +111,14 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
                                 bookList.add(book);
                             }
                             notifyDataSetChanged();
+                            mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             Log.e(LOG_TAG, "onErrorResponse:" + error);
+                            mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                         }}) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
@@ -127,7 +126,6 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
                 }
             };
             mQueue.add(stringRequest);
-            mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
         } else {
             Toast.makeText(activity, "网络错误", Toast.LENGTH_SHORT).show();
         }
@@ -212,10 +210,10 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
     }
 
     private void startDown(Volume volume, Book book) {
-        progressBar.setTitle(book.getName() + "\n" + volume.getName());
-        progressBar.setMessage("下载中...");
+        progressBar.setTitle("下载中...");
+        progressBar.setMessage(book.getName() + "\n" + volume.getName());
         progressBar.setIndeterminate(true);
-        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressBar.setCancelable(false);
         progressBar.show();
         new DownloadRequest(mQueue, mHandler).downBook(volume.getId());

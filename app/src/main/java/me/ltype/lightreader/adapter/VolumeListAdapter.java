@@ -60,7 +60,7 @@ public class VolumeListAdapter extends RecyclerView.Adapter<VolumeListAdapter.Vi
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         ImageView imageView = (ImageView) viewHolder.mView.findViewById(R.id.book_card_cover);
-        File imgFile = new  File(Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR + "/" + volumeList.get(i).getBookId() + volumeList.get(i).getCover());
+        File imgFile = new  File(Constants.BOOK_DIR + "/" + volumeList.get(i).getBookId() + volumeList.get(i).getCover());
         if(imgFile.exists()){
             Bitmap mBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imageView.setImageBitmap(mBitmap);

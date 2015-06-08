@@ -54,7 +54,7 @@ public class DownloadRequest {
                         String volJson = ApiUtil.getVolJson(jsonObject);
                         String chaptersJson = ApiUtil.getChaptersJson(jsonObject);
 
-                        String bookPath = Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR + File.separator + volDetail.getString("series_id") + File.separator + volDetail.getString("id");
+                        String bookPath = Constants.BOOK_DIR + File.separator + volDetail.getString("series_id") + File.separator + volDetail.getString("id");
                         FileUtils.createDir(bookPath);
                         FileUtils.storeInfo(bookJson.trim(), bookPath, "book");
                         FileUtils.storeInfo(volJson.trim(), bookPath, "volume");

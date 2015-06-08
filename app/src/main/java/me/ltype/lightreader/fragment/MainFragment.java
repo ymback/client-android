@@ -46,6 +46,8 @@ public class MainFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        MainActivity mActivity = (MainActivity) getActivity();
+        mActivity.disableToolbarElevation();
         mViewPagerAdapter.notifyDataSetChanged();
     }
 
@@ -60,10 +62,10 @@ public class MainFragment extends Fragment {
         tabsName = getResources().getStringArray(R.array.tabs_name);
 
         MainActivity mainActivity = (MainActivity) getActivity();
-        if(Build.VERSION.SDK_INT >= 21) {
+        /*if(Build.VERSION.SDK_INT >= 21) {
             mainActivity.getToolbar().setElevation(0F);
             mainActivity.getSupportActionBar().setElevation(0F);
-        }
+        }*/
         fragmentList = new ArrayList();
         fragmentList.add(new MyBookFragment());
         fragmentList.add(new PopFragment());

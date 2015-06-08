@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +30,16 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
     private Activity activity;
     private Map<Long, Volume> volumeMap;
     private List<Chapter> chapterList;
+    private List<String> chapterIdList;
 
     public ChapterListAdapter(Activity activity, String bookId, String volumeId) {
         this.activity = activity;
         this.inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.chapterList =  FileUtils.getChapterList(bookId, volumeId);
+        chapterIdList = new ArrayList<>();
+        for (Chapter chapter : chapterList) {
+            chapterIdList.add(chapter.getId());
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -57,18 +63,15 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
         TextView textView = (TextView) viewHolder.mView.findViewById(R.id.title_chapter);
         textView.setText(chapterList.get(i).getTitle());
 
-        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent =  new Intent(viewHolder.mView.getContext() ,ReadActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("bookId", chapterList.get(i).getBookId());
-                bundle.putString("volumeId", chapterList.get(i).getVolumeId());
-                Log.d(LOG_TAG, chapterList.get(i).getId());
-                bundle.putString("chapterId", chapterList.get(i).getId());
-                intent.putExtras(bundle);
-                viewHolder.mView.getContext().startActivity(intent);
-            }
+        viewHolder.mView.setOnClickListener(view -> {
+            Intent intent =  new Intent(viewHolder.mView.getContext() ,ReadActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("bookId", chapterList.get(i).getBookId());
+            bundle.putString("volumeId", chapterList.get(i).getVolumeId());
+            bundle.putInt("chapterIndex", i);
+            bundle.putStringArrayList("chapterIdList", (ArrayList<String>) chapterIdList);
+            intent.putExtras(bundle);
+            viewHolder.mView.getContext().startActivity(intent);
         });
 
     }

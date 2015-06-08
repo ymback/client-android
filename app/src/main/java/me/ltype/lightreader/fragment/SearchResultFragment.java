@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.ltype.lightreader.R;
+import me.ltype.lightreader.activity.MainActivity;
 import me.ltype.lightreader.adapter.SearchResultListAdapter;
 import me.ltype.lightreader.model.Volume;
 
@@ -26,11 +27,14 @@ public class SearchResultFragment extends Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private String query;
-    private SearchView mSearchView;
-    private final List<Volume> volumeList = new ArrayList<>();
+    private MainActivity mActivity;
 
-    public SearchResultFragment(String query) {
-        this.query = query;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mActivity = (MainActivity) getActivity();
+        mActivity.enableToolbarElevation();
+        this.query = getActivity().getIntent().getStringExtra("query");
     }
 
     @Override
@@ -40,7 +44,8 @@ public class SearchResultFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(inflater.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(new SearchResultListAdapter(getActivity(), query));
+        mAdapter = new SearchResultListAdapter(getActivity(), query);
+        mRecyclerView.setAdapter(mAdapter);
         return mRecyclerView;
     }
 }

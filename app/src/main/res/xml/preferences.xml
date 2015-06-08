@@ -47,19 +47,11 @@
 
         <Preference
             android:key="@string/setting_clear_cache"
-            android:enabled="false"
             android:title="清理缓存">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://ltype.me/"/>
         </Preference>
         <Preference
             android:key="@string/setting_clear_data"
-            android:enabled="false"
             android:title="清空数据">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://ltype.me/"/>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

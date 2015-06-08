@@ -81,7 +81,7 @@ public class FileUtils {
     }
 
     public static void initBookList() {
-        File[] books = new File(Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR).listFiles();
+        File[] books = new File(Constants.BOOK_DIR).listFiles();
         if (books != null) {
             for (int i = 0; i < books.length; i++) {
                 File[] volumes = new File(books[i].getPath()).listFiles();
@@ -113,7 +113,7 @@ public class FileUtils {
     }
 
     public static List<Volume> getVolumeList(String bookId) {
-        File[] volumes = new File(Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR + File.separator + bookId).listFiles();
+        File[] volumes = new File(Constants.BOOK_DIR + File.separator + bookId).listFiles();
         if (volumes == null) return null;
         List<Volume> list = new ArrayList<>();
         for (int i = 0; i < volumes.length; i++) {
@@ -134,7 +134,7 @@ public class FileUtils {
 
     public static List<Chapter> getChapterList(String bookId, String volumeId) {
         List<Chapter> chapterList = new ArrayList<>();
-        String path = Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR + "/" + bookId + "/" + volumeId + "/info/chapters.json";
+        String path = Constants.BOOK_DIR + "/" + bookId + "/" + volumeId + "/info/chapters.json";
         JSONArray jsonArray = JSON.parseArray(readFile(path));
         for (int i = 0; i < jsonArray.size(); i ++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -151,7 +151,7 @@ public class FileUtils {
 
     public static List<String> getContentList(String bookId, String volumeId, String chapterId) {
         List<String> contentList = new ArrayList<>();
-        String path = Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR + "/" + bookId + "/" + volumeId + "/content/" + chapterId + ".json";
+        String path = Constants.BOOK_DIR + "/" + bookId + "/" + volumeId + "/content/" + chapterId + ".json";
         JSONArray jsonArray = JSON.parseArray(readFile(path));
         for (int i = 0; i < jsonArray.size(); i ++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -249,5 +249,34 @@ public class FileUtils {
         return fileName;
     }
 
+    public static int clearFolder(File dir, long curTime) {
+        int deletedFiles = 0;
+        if (dir!= null && dir.isDirectory()) {
+            try {
+                for (File child:dir.listFiles()) {
+                    if (child.isDirectory()) {
+                        deletedFiles += clearFolder(child, curTime);
+                    }
+                    if (child.lastModified() < curTime) {
+                        if (child.delete()) {
+                            deletedFiles++;
+                        }
+                    }
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return deletedFiles;
+    }
 
+    public static boolean delFolder(File dir, long curTime) {
+        try {
+            clearFolder(dir, curTime);
+            dir.delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
 }

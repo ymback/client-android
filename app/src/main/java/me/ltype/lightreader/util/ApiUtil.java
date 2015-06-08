@@ -42,7 +42,7 @@ public class ApiUtil {
         String volJson = getVolJson(jsonObject);
         String chaptersJson = getChaptersJson(jsonObject);
 
-        String bookPath = Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR + File.separator + volume.getBookId() + File.separator + volume.getId();
+        String bookPath = Constants.BOOK_DIR + File.separator + volume.getBookId() + File.separator + volume.getId();
         FileUtils.createDir(bookPath);
         FileUtils.storeInfo(bookJson.trim(), bookPath, "book");
         FileUtils.storeInfo(volJson.trim(), bookPath, "volume");

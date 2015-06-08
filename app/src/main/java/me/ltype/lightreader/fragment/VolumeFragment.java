@@ -29,17 +29,13 @@ public class VolumeFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private MainActivity mainActivity;
+    private MainActivity mActivity;
 
     @Override
     public void onAttach(Activity activity) {
-        mainActivity = (MainActivity) activity;
-        if(Build.VERSION.SDK_INT >= 21) {
-            mainActivity.getToolbar().setElevation(12.0F);
-            mainActivity.getSupportActionBar().setElevation(12.0F);
-            Log.e(LOG_TAG, "setElevation");
-        }
-        super.onAttach(mainActivity);
+        mActivity = (MainActivity) getActivity();
+        mActivity.enableToolbarElevation();
+        super.onAttach(mActivity);
     }
 
 
@@ -51,14 +47,14 @@ public class VolumeFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Bundle bundle = mainActivity.getIntent().getExtras();
+        Bundle bundle = mActivity.getIntent().getExtras();
         String bookId = bundle.getString("bookId");
         List<Book> bookList = FileUtils.getBookList();
         mRecyclerView = (RecyclerView) view;
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(view.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(new VolumeListAdapter(mainActivity));
+        mRecyclerView.setAdapter(new VolumeListAdapter(mActivity));
     }
 
     @Override

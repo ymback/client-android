@@ -11,10 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.List;
 
+import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightreader.R;
 import me.ltype.lightreader.activity.MainActivity;
 import me.ltype.lightreader.constant.Constants;
@@ -28,11 +30,12 @@ import me.ltype.lightreader.util.FileUtils;
 public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHolder> {
     private static String LOG_TAG = "BookListAdapter";
     private LayoutInflater inflater;
-    private MainActivity activity;
+    private MainActivity mActivity;
     private List<Book> bookList;
+    private MaterialDialog mMaterialDialog;
 
     public  BookListAdapter (Activity activity) {
-        this.activity = (MainActivity) activity;
+        this.mActivity = (MainActivity) activity;
         this.inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.bookList = FileUtils.getBookList();
     }
@@ -48,6 +51,30 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     @Override
     public BookListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
         View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_book, parent, false);
+        currentView.setLongClickable(true);
+        currentView.setOnLongClickListener(v -> {
+            mMaterialDialog = new MaterialDialog(mActivity)
+                    .setTitle("删除")
+                    .setMessage(bookList.get(i).getName())
+                    .setPositiveButton("确定", v1 -> {
+                        File bookDir = new File(Constants.BOOK_DIR + File.separator + bookList.get(i).getId());
+                        if (bookDir != null && bookDir.isDirectory()) {
+                            if (FileUtils.delFolder(bookDir, System.currentTimeMillis())) {
+                                bookList.remove(i);
+                                notifyDataSetChanged();
+                                Toast.makeText(mActivity, "操作成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(mActivity, "未成功删除数据", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        mMaterialDialog.dismiss();
+                    })
+                    .setNegativeButton("取消", v1 -> {
+                        mMaterialDialog.dismiss();
+                    });
+            mMaterialDialog.show();
+            return true;
+        });
         ViewHolder vh = new ViewHolder(currentView);
         return vh;
     }
@@ -55,7 +82,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         ImageView imageView = (ImageView) viewHolder.mView.findViewById(R.id.book_card_cover);
-        File imgFile = new  File(Environment.getExternalStorageDirectory().getPath() + Constants.BOOK_DIR + "/" + bookList.get(i).getId() + bookList.get(i).getCover());
+        File imgFile = new  File(Constants.BOOK_DIR + File.separator + bookList.get(i).getId() + bookList.get(i).getCover());
         if(imgFile.exists()){
             Bitmap mBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             imageView.setImageBitmap(mBitmap);
@@ -70,8 +97,8 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         viewHolder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.getIntent().putExtra("bookId", bookList.get(i).getId());
-                activity.setFragmentChild(new VolumeFragment(), bookList.get(i).getName());
+                mActivity.getIntent().putExtra("bookId", bookList.get(i).getId());
+                mActivity.setFragmentChild(new VolumeFragment(), bookList.get(i).getName());
             }
         });
 

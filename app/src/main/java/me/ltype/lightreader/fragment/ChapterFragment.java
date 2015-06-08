@@ -28,15 +28,6 @@ public class ChapterFragment extends Fragment {
     private String bookId;
     private String volumeId;
 
-    public ChapterFragment() {
-
-    }
-
-    public ChapterFragment(String bookId, String volumeId) {
-        this.bookId = bookId;
-        this.volumeId = volumeId;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Bundle bundle = getActivity().getIntent().getExtras();

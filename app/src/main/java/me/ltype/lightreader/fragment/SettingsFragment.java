@@ -1,5 +1,6 @@
 package me.ltype.lightreader.fragment;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -8,8 +9,15 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import java.io.File;
+
+import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightreader.R;
+import me.ltype.lightreader.constant.Constants;
+import me.ltype.lightreader.util.FileUtils;
 
 /**
  * Created by ltype on 2015/6/2.
@@ -25,8 +33,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     private Preference clearCachePre;
     private Preference clearDataPre;
 
-    private SharedPreferences mSharedPreferences;
-    private SharedPreferences.Editor mEditor;
+    private MaterialDialog mMaterialDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +70,56 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
+        if (preference.getKey().equals(getString(R.string.setting_check_version))) {
+            return true;
+        } else if (preference.getKey().equals(getString(R.string.setting_clear_cache))) {
+            File cacheDir = getActivity().getCacheDir();
+            if (cacheDir != null && cacheDir.isDirectory()) {
+               if (FileUtils.clearFolder(cacheDir, System.currentTimeMillis()) > 0) {
+                   Toast.makeText(getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
+               } else {
+                   Toast.makeText(getActivity(), "未成功删除数据", Toast.LENGTH_SHORT).show();
+               }
+            }
+            return true;
+        } else if (preference.getKey().equals(getString(R.string.setting_clear_data))) {
+            mMaterialDialog = new MaterialDialog(getActivity())
+                .setTitle("清空数据")
+                .setMessage("删除所有书籍")
+                .setPositiveButton("确定", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                        File bookDir = new File(Constants.BOOK_DIR);
+                        if (bookDir != null && bookDir.isDirectory()) {
+                            ProgressDialog progressBar = new ProgressDialog(getActivity());
+                            progressBar.setTitle("清空数据");
+                            progressBar.setMessage("删除中...");
+                            progressBar.setIndeterminate(true);
+                            progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                            progressBar.setCancelable(false);
+                            progressBar.show();
+                            int i;
+                            if ((i = FileUtils.clearFolder(bookDir, System.currentTimeMillis())) > 0) {
+                                Log.e(LOG_TAG, i +"");
+                                progressBar.dismiss();
+                                Toast.makeText(getActivity(), "操作成功", Toast.LENGTH_SHORT).show();
+                            } else {
+                                progressBar.dismiss();
+                                Toast.makeText(getActivity(), "未成功删除数据", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                })
+                .setNegativeButton("取消", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                });
+            mMaterialDialog.show();
+            return true;
+        }
         return false;
     }
 
