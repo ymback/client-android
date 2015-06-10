@@ -19,6 +19,8 @@ import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.StringRequest;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import me.ltype.lightreader.constant.Constants;
@@ -33,6 +35,8 @@ public class DownloadRequest {
     private static String LOG_TAG = "DownloadRequest";
     private RequestQueue mQueue;
     private Handler mHandler;
+    private List<String> imgList = new ArrayList<>();
+    private List<String> contentList = new ArrayList<>();
 
     public DownloadRequest(RequestQueue queue, Handler handler) {
         mQueue = queue;
@@ -43,37 +47,32 @@ public class DownloadRequest {
         StringRequest volRequest = new StringRequest(
                 Request.Method.GET,
                 ApiUtil.API_PATH + "vol/" + volId,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        JSONObject jsonObject = JSON.parseObject(response);
-                        JSONObject volDetail = jsonObject.getJSONArray("volDetail").getJSONObject(0);
-                        JSONArray chapterResult = jsonObject.getJSONArray("chapterResult");
+                response -> {
+                    JSONObject jsonObject = JSON.parseObject(response);
+                    JSONObject volDetail = jsonObject.getJSONArray("volDetail").getJSONObject(0);
+                    JSONArray chapterResult = jsonObject.getJSONArray("chapterResult");
 
-                        String bookJson = ApiUtil.getBookJson(jsonObject);
-                        String volJson = ApiUtil.getVolJson(jsonObject);
-                        String chaptersJson = ApiUtil.getChaptersJson(jsonObject);
+                    String bookJson = ApiUtil.getBookJson(jsonObject);
+                    String volJson = ApiUtil.getVolJson(jsonObject);
+                    String chaptersJson = ApiUtil.getChaptersJson(jsonObject);
 
-                        String bookPath = Constants.BOOK_DIR + File.separator + volDetail.getString("series_id") + File.separator + volDetail.getString("id");
-                        FileUtils.createDir(bookPath);
-                        FileUtils.storeInfo(bookJson.trim(), bookPath, "book");
-                        FileUtils.storeInfo(volJson.trim(), bookPath, "volume");
-                        FileUtils.storeInfo(chaptersJson.trim(), bookPath, "chapters");
+                    String bookPath = Constants.BOOK_DIR + File.separator + volDetail.getString("series_id") + File.separator + volDetail.getString("id");
+                    FileUtils.createDir(bookPath);
+                    FileUtils.storeInfo(bookJson.trim(), bookPath, "book");
+                    FileUtils.storeInfo(volJson.trim(), bookPath, "volume");
+                    FileUtils.storeInfo(chaptersJson.trim(), bookPath, "chapters");
 
-                        downImage(Constants.SITE + volDetail.getString("vol_cover"), bookPath);
+                    downImage(Constants.SITE + volDetail.getString("vol_cover"), bookPath);
 
-                        JSONArray jsonArray = jsonObject.getJSONArray("chapterResult");
-                        for (int i = 0; i < jsonArray.size(); i ++) {
-                            String chapterId = jsonArray.getJSONObject(i).getString("chapter_id");
-                            downContent(chapterId, bookPath);
-                        }
+                    JSONArray jsonArray = jsonObject.getJSONArray("chapterResult");
+                    for (int i = 0; i < jsonArray.size(); i ++) {
+                        String chapterId = jsonArray.getJSONObject(i).getString("chapter_id");
+                        downContent(chapterId, bookPath);
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                error -> {
 
-                    }}) {
+                }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 return ApiUtil.getApiHeader();
@@ -86,20 +85,15 @@ public class DownloadRequest {
         StringRequest contentRequest = new StringRequest(
                 Request.Method.GET,
                 ApiUtil.API_PATH + "view/" + chapterId,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        FileUtils.storeContent(ApiUtil.getContentJson(response), bookPath, chapterId);
-                        for (String url : Util.findAll("(http://lknovel.lightnovel.cn/illustration/).*?(\\.jpg)", response)) {
-                            downImage(url, bookPath);
-                            Log.e(LOG_TAG, url);
-                        }
+                response -> {
+                    FileUtils.storeContent(ApiUtil.getContentJson(response), bookPath, chapterId);
+                    for (String url : Util.findAll("(http://lknovel.lightnovel.cn/illustration/).*?(\\.jpg)", response)) {
+                        downImage(url, bookPath);
+                        Log.e(LOG_TAG, url);
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                    }}) {
+                error -> {
+                }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 return ApiUtil.getApiHeader();
@@ -111,17 +105,9 @@ public class DownloadRequest {
     private void downImage(final String url, final String path) {
         ImageRequest imageRequest = new ImageRequest(
                 url,
-                new Response.Listener<Bitmap>() {
-                    @Override
-                    public void onResponse(Bitmap response) {
-                        FileUtils.storeImg(url, path, response);
-                    }
-                }, 0, 0, Bitmap.Config.ARGB_8888, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                response -> FileUtils.storeImg(url, path, response), 0, 0, Bitmap.Config.ARGB_8888, error -> {
 
-            }
-        });
+                });
         mQueue.add(imageRequest);
         mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
     }

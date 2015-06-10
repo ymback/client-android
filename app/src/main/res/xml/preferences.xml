@@ -27,22 +27,20 @@
         <SwitchPreference
             android:key="@string/setting_screen_always"
             android:defaultValue="false"
-            android:title="屏幕常亮" />
+            android:title="屏幕常亮"
+            android:summary="仅阅读时"/>
         <SwitchPreference
             android:key="@string/setting_night_model"
             android:defaultValue="false"
-            android:title="夜间模式" />
+            android:title="夜间模式"
+            android:summary="仅阅读时"/>
     </PreferenceCategory>
 
     <PreferenceCategory
         android:title="其他设置">
         <Preference
             android:key="@string/setting_check_version"
-            android:enabled="false"
             android:title="检查更新">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://ltype.me/apk"/>
         </Preference>
 
         <Preference

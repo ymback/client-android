@@ -213,7 +213,7 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
         progressBar.setTitle("下载中...");
         progressBar.setMessage(book.getName() + "\n" + volume.getName());
         progressBar.setIndeterminate(true);
-        progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressBar.setCancelable(false);
         progressBar.show();
         new DownloadRequest(mQueue, mHandler).downBook(volume.getId());

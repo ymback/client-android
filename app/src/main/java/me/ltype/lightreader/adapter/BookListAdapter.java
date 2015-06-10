@@ -51,8 +51,14 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
     @Override
     public BookListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
         View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_book, parent, false);
-        currentView.setLongClickable(true);
-        currentView.setOnLongClickListener(v -> {
+        ViewHolder vh = new ViewHolder(currentView);
+        return vh;
+    }
+
+    @Override
+    public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
+        viewHolder.mView.setLongClickable(true);
+        viewHolder.mView.setOnLongClickListener(v -> {
             mMaterialDialog = new MaterialDialog(mActivity)
                     .setTitle("删除")
                     .setMessage(bookList.get(i).getName())
@@ -75,12 +81,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
             mMaterialDialog.show();
             return true;
         });
-        ViewHolder vh = new ViewHolder(currentView);
-        return vh;
-    }
 
-    @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
         ImageView imageView = (ImageView) viewHolder.mView.findViewById(R.id.book_card_cover);
         File imgFile = new  File(Constants.BOOK_DIR + File.separator + bookList.get(i).getId() + bookList.get(i).getCover());
         if(imgFile.exists()){

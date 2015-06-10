@@ -3,6 +3,7 @@ package me.ltype.lightreader.activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,16 +13,30 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.tencent.android.tpush.XGPushConfig;
 import com.tencent.android.tpush.XGPushManager;
 import com.tencent.android.tpush.XGPushRegisterResult;
 
+import java.io.File;
+import java.util.Map;
+
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 import me.ltype.lightreader.R;
+import me.ltype.lightreader.constant.Constants;
 import me.ltype.lightreader.fragment.AnimeFragment;
 import me.ltype.lightreader.fragment.LastUpdateFragment;
 import me.ltype.lightreader.fragment.MainFragment;
 import me.ltype.lightreader.fragment.SearchResultFragment;
+import me.ltype.lightreader.util.ApiUtil;
+import me.ltype.lightreader.util.FileUtils;
 
 public class MainActivity extends MaterialNavigationDrawer {
     private static String LOG_TAG = "MainActivity";
