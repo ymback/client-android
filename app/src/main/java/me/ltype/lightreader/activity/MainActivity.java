@@ -1,9 +1,13 @@
 package me.ltype.lightreader.activity;
 
 import android.app.SearchManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -31,10 +35,15 @@ import java.util.Map;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 import me.ltype.lightreader.R;
 import me.ltype.lightreader.constant.Constants;
+import me.ltype.lightreader.db.LRSQLiteOpenHelper;
 import me.ltype.lightreader.fragment.AnimeFragment;
 import me.ltype.lightreader.fragment.LastUpdateFragment;
 import me.ltype.lightreader.fragment.MainFragment;
 import me.ltype.lightreader.fragment.SearchResultFragment;
+import me.ltype.lightreader.query.Expression;
+import me.ltype.lightreader.query.LightReaderDataStore;
+import me.ltype.lightreader.query.LightReaderDataStore.Bookmarks;
+import me.ltype.lightreader.query.SQLiteDatabaseWrapper;
 import me.ltype.lightreader.util.ApiUtil;
 import me.ltype.lightreader.util.FileUtils;
 

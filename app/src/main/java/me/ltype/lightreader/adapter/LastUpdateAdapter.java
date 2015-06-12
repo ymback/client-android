@@ -88,38 +88,33 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
             StringRequest stringRequest = new StringRequest(
                     Request.Method.GET,
                     ApiUtil.API_PATH + "latestPost",
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            JSONArray jsonArray = JSON.parseObject(response).getJSONArray("latestPost");
-                            for (int i = 0; i < jsonArray.size(); i++) {
-                                JSONObject json = jsonArray.getJSONObject(i);
-                                Volume volume = new Volume();
-                                volume.setIndex(json.getString("vol_number"));
-                                volume.setBookId(json.getString("series_id"));
-                                volume.setId(json.getString("id"));
-                                volume.setHeader(json.getString("vol_number"));
-                                volume.setName(json.getString("vol_title"));
-                                volume.setCover(json.getString("vol_cover"));
-                                volume.setDescription(json.getString("vol_desc"));
-                                volumeList.add(volume);
+                    response -> {
+                        JSONArray jsonArray = JSON.parseObject(response).getJSONArray("latestPost");
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            JSONObject json = jsonArray.getJSONObject(i);
+                            Volume volume = new Volume();
+                            volume.setIndex(json.getString("vol_number"));
+                            volume.setBookId(json.getString("series_id"));
+                            volume.setId(json.getString("id"));
+                            volume.setHeader(json.getString("vol_number"));
+                            volume.setName(json.getString("vol_title"));
+                            volume.setCover(json.getString("vol_cover"));
+                            volume.setDescription(json.getString("vol_desc"));
+                            volumeList.add(volume);
 
-                                Book book = new Book();
-                                book.setAuthor(json.getString("novel_author"));
-                                book.setIllustrator(json.getString("novel_illustor"));
-                                book.setName(json.getString("novel_title"));
-                                bookList.add(book);
-                            }
-                            notifyDataSetChanged();
-                            mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
+                            Book book = new Book();
+                            book.setAuthor(json.getString("novel_author"));
+                            book.setIllustrator(json.getString("novel_illustor"));
+                            book.setName(json.getString("novel_title"));
+                            bookList.add(book);
                         }
+                        notifyDataSetChanged();
+                        mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                     },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Log.e(LOG_TAG, "onErrorResponse:" + error);
-                            mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
-                        }}) {
+                    error -> {
+                        Toast.makeText(activity, "网络错误", Toast.LENGTH_SHORT).show();
+                        mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
+                    }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     return ApiUtil.getApiHeader();
@@ -176,27 +171,18 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
         TextView author = (TextView) viewHolder.mView.findViewById(R.id.book_card_author);
         author.setText(bookList.get(i).getAuthor());
 
-        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMaterialDialog = new MaterialDialog(view.getContext())
-                        .setTitle("下载")
-                        .setMessage("确定下载" + bookList.get(i).getName() + volumeList.get(i).getHeader() + volumeList.get(i).getName() + "?")
-                        .setPositiveButton("确定", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                startDown(volumeList.get(i), bookList.get(i));
-                                mMaterialDialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("取消", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mMaterialDialog.dismiss();
-                            }
-                        });
-                mMaterialDialog.show();
-            }
+        viewHolder.mView.setOnClickListener(view -> {
+            mMaterialDialog = new MaterialDialog(view.getContext())
+                    .setTitle("下载")
+                    .setMessage("确定下载" + bookList.get(i).getName() + volumeList.get(i).getHeader() + volumeList.get(i).getName() + "?")
+                    .setPositiveButton("确定", v -> {
+                        startDown(volumeList.get(i), bookList.get(i));
+                        mMaterialDialog.dismiss();
+                    })
+                    .setNegativeButton("取消", v -> {
+                        mMaterialDialog.dismiss();
+                    });
+            mMaterialDialog.show();
         });
     }
     @Override

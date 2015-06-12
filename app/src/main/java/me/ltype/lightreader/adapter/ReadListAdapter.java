@@ -33,7 +33,7 @@ import me.ltype.lightreader.util.FileUtils;
 /**
  * Created by ltype on 2015/5/16.
  */
-public class ReadListAdapter extends RecyclerView.Adapter<ReadListAdapter.ViewHolder> implements View.OnTouchListener {
+public class ReadListAdapter extends RecyclerView.Adapter<ReadListAdapter.ViewHolder> {
     private static String LOG_TAG = "ReadListAdapter";
     private LayoutInflater inflater;
     private Activity activity;
@@ -70,34 +70,6 @@ public class ReadListAdapter extends RecyclerView.Adapter<ReadListAdapter.ViewHo
         contentList =  FileUtils.getContentList(bookId, volumeId, chapterIdList.get(chapterIndex));
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                int screenWidth  = activity.getResources().getDisplayMetrics().widthPixels;
-                float rawX = event.getRawX();
-                if (rawX > screenWidth * 0.9) {
-                    if (checkTouchTime()) return true;
-                    if (chapterIndex + 1 < chapterIdList.size()) {
-                        contentList =  FileUtils.getContentList(bookId, volumeId, chapterIdList.get(++chapterIndex));
-                        notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(v.getContext(), "已到最后一章", Toast.LENGTH_SHORT).show();
-                    }
-                } else if (rawX < screenWidth * 0.1) {
-                    if (checkTouchTime()) return true;
-                    if (chapterIndex - 1 >= 0) {
-                        contentList =  FileUtils.getContentList(bookId, volumeId, chapterIdList.get(--chapterIndex));
-                        notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(v.getContext(), "已到最前一章", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                break;
-        }
-        return false;
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public View mView;
         public ViewHolder(View v) {
@@ -109,7 +81,6 @@ public class ReadListAdapter extends RecyclerView.Adapter<ReadListAdapter.ViewHo
     @Override
     public ReadListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
         View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_read, parent, false);
-        currentView.setOnTouchListener(this);
         ViewHolder vh = new ViewHolder(currentView);
         return vh;
     }
@@ -145,14 +116,5 @@ public class ReadListAdapter extends RecyclerView.Adapter<ReadListAdapter.ViewHo
     @Override
     public int getItemCount() {
         return contentList.size();
-    }
-
-    private boolean checkTouchTime() {
-        if(touchTime + 2000 <= System.currentTimeMillis()) {
-            touchTime = System.currentTimeMillis();
-            Toast.makeText(activity, "再次点击切换章节", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return false;
     }
 }
