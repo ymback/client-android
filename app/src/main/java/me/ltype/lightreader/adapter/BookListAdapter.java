@@ -95,12 +95,9 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         TextView author = (TextView) viewHolder.mView.findViewById(R.id.book_card_author);
         author.setText(bookList.get(i).getAuthor());
 
-        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mActivity.getIntent().putExtra("bookId", bookList.get(i).getId());
-                mActivity.setFragmentChild(new VolumeFragment(), bookList.get(i).getName());
-            }
+        viewHolder.mView.setOnClickListener(view -> {
+            mActivity.getIntent().putExtra("bookId", bookList.get(i).getId());
+            mActivity.setFragmentChild(new VolumeFragment(), bookList.get(i).getName());
         });
 
     }

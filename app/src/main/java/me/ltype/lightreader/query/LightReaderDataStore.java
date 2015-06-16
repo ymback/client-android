@@ -42,4 +42,19 @@ public interface LightReaderDataStore {
         String[] TYPES = {TYPE_PRIMARY_KEY, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL, TYPE_INT_UNIQUE, TYPE_TEXT_NOT_NULL, TYPE_INT};
 
     }
+
+    /*interface Anime extends BaseColumns {
+        String TABLE_NAME = "anime";
+        String CONTENT_PATH = TABLE_NAME;
+        Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, CONTENT_PATH);
+
+        String BOOK_ID = "book_id";
+        String COVER = "cover";
+        String AUTHOR = "author";
+        String MONTH = "month";
+
+        String[] COLUMNS = {_ID, BOOK_ID, COVER, AUTHOR, MONTH, UPDATE_TIME};
+        String[] TYPES = {TYPE_PRIMARY_KEY, TYPE_TEXT_NOT_NULL, TYPE_TEXT_NOT_NULL, TYPE_INT_UNIQUE, TYPE_TEXT_NOT_NULL, TYPE_INT};
+
+    }*/
 }

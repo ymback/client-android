@@ -68,10 +68,10 @@ public class AnimeFragment extends Fragment {
         tabsName = getResources().getStringArray(R.array.anime_tabs_name);
 
         fragmentList = new ArrayList();
-        fragmentList.add(new MyBookFragment());
-        fragmentList.add(new MyBookFragment());
-        fragmentList.add(new MyBookFragment());
-        fragmentList.add(new MyBookFragment());
+        fragmentList.add(new MonthFragment("1"));
+        fragmentList.add(new MonthFragment("4"));
+        fragmentList.add(new MonthFragment("7"));
+        fragmentList.add(new MonthFragment("10"));
 
         mViewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), fragmentList, tabsName);
 

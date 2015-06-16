@@ -87,9 +87,7 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
             StringRequest jsonObjectRequest = new StringRequest(
                 Request.Method.GET,
                 ApiUtil.API_PATH + "search/" + Util.encodeUrl(query) + "/1/",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
+                    response -> {
                         JSONArray jsonArray = JSON.parseObject(response).getJSONArray("volResult");
                         for (int i = 0; i < jsonArray.size(); i++) {
                             Book book = ApiUtil.getBook(jsonArray.getJSONObject(i).toString());
@@ -99,14 +97,11 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
                         }
                         notifyDataSetChanged();
                         mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+                    },
+                    error -> {
                         Log.e("TAG", error.getMessage(), error);
                         mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
-                }}) {
+                }) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         return ApiUtil.getApiHeader();
@@ -163,27 +158,18 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
         TextView author = (TextView) viewHolder.mView.findViewById(R.id.book_card_author);
         author.setText(bookList.get(i).getAuthor());
 
-        viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mMaterialDialog = new MaterialDialog(view.getContext())
-                        .setTitle("下载")
-                        .setMessage("确定下载" + bookList.get(i).getName() + volumeList.get(i).getHeader() + volumeList.get(i).getName() + "?")
-                        .setPositiveButton("确定", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                startDown(volumeList.get(i), bookList.get(i));
-                                mMaterialDialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("取消", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mMaterialDialog.dismiss();
-                            }
-                        });
-                mMaterialDialog.show();
-            }
+        viewHolder.mView.setOnClickListener(view -> {
+            mMaterialDialog = new MaterialDialog(view.getContext())
+                    .setTitle("下载")
+                    .setMessage("确定下载" + bookList.get(i).getName() + volumeList.get(i).getHeader() + volumeList.get(i).getName() + "?")
+                    .setPositiveButton("确定", v -> {
+                        startDown(volumeList.get(i), bookList.get(i));
+                        mMaterialDialog.dismiss();
+                    })
+                    .setNegativeButton("取消", v -> {
+                        mMaterialDialog.dismiss();
+                    });
+            mMaterialDialog.show();
         });
     }
 
