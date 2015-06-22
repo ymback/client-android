@@ -15,15 +15,15 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent">
         <ImageView
-            android:id="@+id/book_card_cover"
+            android:id="@+id/card_other_book_cover"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_width="56dp"
             android:layout_height="80dp"/>
         <TextView
-            android:id="@+id/book_card_name"
+            android:id="@+id/card_other_book_name"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/book_card_cover"
+            android:layout_toRightOf="@id/card_other_book_cover"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="left|center_vertical"
@@ -31,20 +31,42 @@
             android:ellipsize="end"
             android:paddingLeft="8dp" />
         <TextView
-            android:id="@+id/_book_card_author"
+            android:id="@+id/card_other_volume_index"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/book_card_cover"
-            android:layout_below="@id/book_card_name"
+            android:layout_below="@id/card_other_book_name"
+            android:layout_toRightOf="@id/card_other_book_cover"
+            android:layout_gravity="left|center_vertical"
+            android:lines="1"
+            android:ellipsize="end"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" />
+        <TextView
+            android:id="@+id/card_other_volume_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/card_other_book_name"
+            android:layout_toRightOf="@id/card_other_volume_index"
+            android:layout_gravity="left|center_vertical"
+            android:lines="1"
+            android:ellipsize="end"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" />
+        <TextView
+            android:id="@+id/_card_other_book_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/card_other_volume_index"
+            android:layout_toRightOf="@id/card_other_book_cover"
             android:layout_gravity="left|center_vertical"
             android:paddingLeft="8dp"
             android:text="作者："/>
         <TextView
-            android:id="@+id/book_card_author"
+            android:id="@+id/card_other_book_author"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/_book_card_author"
-            android:layout_below="@id/book_card_name"
+            android:layout_below="@id/card_other_volume_index"
+            android:layout_toRightOf="@id/_card_other_book_author"
             android:layout_gravity="left|center_vertical"
             android:paddingLeft="8dp" />
         <!--<TextView

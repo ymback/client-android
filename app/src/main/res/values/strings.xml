@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LightReader</string>
+    <string name="app_name">轻庭</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -26,7 +26,7 @@
     <string name="setting">设置</string>
 
 
-    <string name="sp_bookmarks">me.ltype.lightreader.BOOKMARS</string>
+    <string name="sp_bookmarks">me.ltype.lightniwa.BOOKMARS</string>
 
     <string-array name="tabs_name">
         <item name="my_book">我的</item>

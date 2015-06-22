@@ -18,10 +18,6 @@ repositories {
 android {
     signingConfigs {
         config {
-            keyAlias 'LightReader'
-            keyPassword '60a0076db5091c1c198b1fb47a1d4205'
-            storeFile file('D:/Android/key/release.jks')
-            storePassword '1c478c1bfbe7201f064dce797606a1c5'
         }
     }
 
@@ -30,11 +26,11 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "me.ltype.lightreader"
+        applicationId "me.ltype.lightniwa"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "0.1"
+        versionCode 2
+        versionName "v0.4.1_beta"
     }
 
     buildTypes {

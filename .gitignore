@@ -27,3 +27,5 @@ Thumbs.db
 /signing.properties
 
 key.xml
+
+*.apk
