@@ -1,33 +1,34 @@
 package me.ltype.lightniwa.activity;
 
+import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewStub;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.tencent.android.tpush.XGPushConfig;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.tencent.android.tpush.XGPushManager;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 import me.ltype.lightniwa.R;
-import me.ltype.lightniwa.constant.Constants;
 import me.ltype.lightniwa.fragment.AnimeFragment;
 import me.ltype.lightniwa.fragment.LastUpdateFragment;
 import me.ltype.lightniwa.fragment.MainFragment;
 import me.ltype.lightniwa.fragment.SearchResultFragment;
-import me.ltype.lightniwa.model.Book;
 import me.ltype.lightniwa.util.FileUtils;
+
+import static me.ltype.lightniwa.util.Util.checkUpdate;
 
 public class MainActivity extends MaterialNavigationDrawer {
     private static String LOG_TAG = "MainActivity";
@@ -38,6 +39,9 @@ public class MainActivity extends MaterialNavigationDrawer {
     @Override
     public void init(Bundle savedInstanceState) {
         FileUtils.syncBooks(this);
+        checkUpdate(this, false);
+        Fresco.initialize(getApplicationContext());
+
         setDrawerHeaderImage(R.drawable.mat2);
         setUsername("ltype");
         setUserEmail("asuka@ltype.me");
@@ -48,17 +52,11 @@ public class MainActivity extends MaterialNavigationDrawer {
         this.addSection(newSection(getResources().getString(R.string.anime_aera), new AnimeFragment()));
 
         this.addBottomSection(newSection(getResources().getString(R.string.setting), R.drawable.ic_settings_black_24dp, new Intent(this, SettingActivity.class)));
+        this.addBottomSection(newSection(getResources().getString(R.string.about_us), R.drawable.ic_help_black_24dp, new Intent(this, AboutUsActivity.class)));
 
-        XGPushConfig.enableDebug(this, true);
+//        XGPushConfig.enableDebug(this, true);
         XGPushManager.registerPush(getApplicationContext());
-        Log.e(LOG_TAG, XGPushConfig.getToken(getApplicationContext()));
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        new Thread(()-> {
-        });
+//        Log.e(LOG_TAG, XGPushConfig.getToken(getApplicationContext()));
     }
 
     @Override

@@ -6,8 +6,8 @@
     <integer name="duration_bar">800</integer>
     <integer name="duration_search">800</integer>
 
-    <dimen name="toolbar_elevationp">4dp</dimen>
-    <dimen name="tab_elevationp">4dp</dimen>
+    <dimen name="toolbar_elevation">4dp</dimen>
+    <dimen name="tab_elevation">4dp</dimen>
 	
 	
     <dimen name="navdrawer_width">260dp</dimen>

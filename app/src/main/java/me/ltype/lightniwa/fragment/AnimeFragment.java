@@ -32,14 +32,6 @@ public class AnimeFragment extends Fragment {
     private LinearLayout mLinearLayout;
     private String[] tabsName;
 
-    public static AnimeFragment newInstance() {
-        AnimeFragment fragment = new AnimeFragment();
-        return fragment;
-    }
-
-    public AnimeFragment() {
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +40,8 @@ public class AnimeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        MainActivity mActivity = (MainActivity) getActivity();
+        mActivity.disableToolbarElevation();
         mViewPagerAdapter.notifyDataSetChanged();
     }
 
@@ -59,14 +53,6 @@ public class AnimeFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        MainActivity mainActivity = (MainActivity) getActivity();
-        if(Build.VERSION.SDK_INT >= 21) {
-            mainActivity.getToolbar().setElevation(0F);
-            mainActivity.getSupportActionBar().setElevation(0F);
-        }
-
-        tabsName = getResources().getStringArray(R.array.anime_tabs_name);
 
         Bundle jan = new Bundle();
         jan.putString("month", "1");
@@ -94,13 +80,14 @@ public class AnimeFragment extends Fragment {
         fragmentList.add(summer);
         fragmentList.add(autumn);
 
+        tabsName = getResources().getStringArray(R.array.anime_tabs_name);
         mViewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), fragmentList, tabsName);
 
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
         mViewPager.setAdapter(mViewPagerAdapter);
 
-        SlidingTabLayout tabs = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
-        tabs.setViewPager(mViewPager);
+        slidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
+        slidingTabLayout.setViewPager(mViewPager);
     }
 
     @Override

@@ -15,9 +15,9 @@ import me.ltype.lightniwa.R;
  * Created by ltype on 2015/5/14.
  */
 public class SlidingTabStrip extends LinearLayout {
-    private static final int DEFAULT_BOTTOM_BORDER_THICKNESS_DIPS = 4;
+    private static final int DEFAULT_BOTTOM_BORDER_THICKNESS_DIPS = 2;
     private static final byte DEFAULT_BOTTOM_BORDER_COLOR_ALPHA = 0x26;
-    private static final int SELECTED_INDICATOR_THICKNESS_DIPS = 8;
+    private static final int SELECTED_INDICATOR_THICKNESS_DIPS = 4;
     private static final int DEFAULT_SELECTED_INDICATOR_COLOR = 0xFFE1F5FE;
 
     private static final int DEFAULT_DIVIDER_THICKNESS_DIPS = 1;
@@ -49,7 +49,7 @@ public class SlidingTabStrip extends LinearLayout {
         super(context, attrs);
         setWillNotDraw(false);
 
-        //final float density = getResources().getDisplayMetrics().density;
+        final float density = getResources().getDisplayMetrics().density;
 
         TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.color, outValue, true);
@@ -63,16 +63,16 @@ public class SlidingTabStrip extends LinearLayout {
         mDefaultTabColorizer.setDividerColors(setColorAlpha(themeForegroundColor,
                 DEFAULT_DIVIDER_COLOR_ALPHA));
 
-        mBottomBorderThickness = (int) (DEFAULT_BOTTOM_BORDER_THICKNESS_DIPS);
+        mBottomBorderThickness = (int) (DEFAULT_BOTTOM_BORDER_THICKNESS_DIPS * density);
         mBottomBorderPaint = new Paint();
         mBottomBorderPaint.setColor(mDefaultBottomBorderColor);
 
-        mSelectedIndicatorThickness = (int) (SELECTED_INDICATOR_THICKNESS_DIPS);
+        mSelectedIndicatorThickness = (int) (SELECTED_INDICATOR_THICKNESS_DIPS * density);
         mSelectedIndicatorPaint = new Paint();
 
         mDividerHeight = DEFAULT_DIVIDER_HEIGHT;
         mDividerPaint = new Paint();
-        mDividerPaint.setStrokeWidth((int) (DEFAULT_DIVIDER_THICKNESS_DIPS));
+        mDividerPaint.setStrokeWidth((int) (DEFAULT_DIVIDER_THICKNESS_DIPS * density));
     }
 
     void setCustomTabColorizer(SlidingTabLayout.TabColorizer customTabColorizer) {

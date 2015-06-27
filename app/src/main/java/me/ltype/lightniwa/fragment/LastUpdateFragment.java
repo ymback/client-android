@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.MainActivity;
+import me.ltype.lightniwa.adapter.BookListAdapter;
 import me.ltype.lightniwa.adapter.LastUpdateAdapter;
 
 /**
@@ -17,19 +18,31 @@ import me.ltype.lightniwa.adapter.LastUpdateAdapter;
  */
 public class LastUpdateFragment extends Fragment {
     private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private MainActivity mainActivity;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mainActivity = (MainActivity) getActivity();
-        mainActivity.enableToolbarElevation();
-        mRecyclerView = (RecyclerView) inflater.inflate(R.layout.list_view, container, false);
+    public void onResume() {
+        super.onResume();
+        MainActivity mActivity = (MainActivity) getActivity();
+        mActivity.enableToolbarElevation();
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
         mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(inflater.getContext());
+        mLayoutManager = new LinearLayoutManager(getActivity());
+//        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(new LastUpdateAdapter(getActivity()));
-        return mRecyclerView;
+        mAdapter = new LastUpdateAdapter(getActivity(), this);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.list_view, container, false);
     }
 }

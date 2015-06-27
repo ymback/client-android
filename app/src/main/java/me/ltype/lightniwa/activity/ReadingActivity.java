@@ -13,9 +13,11 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.rey.material.app.DialogFragment;
+import com.rey.material.app.SimpleDialog;
+
 import java.util.List;
 
-import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightniwa.adapter.ReadingListViewAdapter;
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.db.LightNiwaDataStore.Bookmarks;
@@ -31,7 +33,6 @@ public class ReadingActivity extends ActionBarActivity {
 
     private ListView listView;
     private BaseAdapter mAdapter;
-    private MaterialDialog mMaterialDialog;
     private ContentResolver mResolver;
     private long lastTouchTime = 0;
 
@@ -116,17 +117,26 @@ public class ReadingActivity extends ActionBarActivity {
                 listView.setSelection(cursor.getInt(0));
                 Toast.makeText(getApplicationContext(), "已载入书签", Toast.LENGTH_SHORT).show();
             } else {
-                mMaterialDialog = new MaterialDialog(this)
-                        .setTitle(getResources().getString(R.string.bookmarks))
-                        .setMessage(getResources().getString(R.string.continue_read))
-                        .setPositiveButton(getResources().getString(R.string.ok), v -> {
-                            mMaterialDialog.dismiss();
-                            listView.setSelection(cursor.getInt(0));
-                        })
-                        .setNegativeButton(getResources().getString(R.string.cancel), v -> {
-                            mMaterialDialog.dismiss();
-                        });
-                mMaterialDialog.show();
+                com.rey.material.app.Dialog.Builder builder = null;
+                builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+                    @Override
+                    public void onPositiveActionClicked(DialogFragment fragment) {
+                        listView.setSelection(cursor.getInt(0));
+                        super.onPositiveActionClicked(fragment);
+                    }
+                    @Override
+                    public void onNegativeActionClicked(DialogFragment fragment) {
+                        super.onNegativeActionClicked(fragment);
+                    }
+                };
+
+                ((SimpleDialog.Builder)builder).message(getResources().getString(R.string.continue_read))
+                        .title(getResources().getString(R.string.bookmarks))
+                        .positiveAction(getResources().getString(R.string.ok))
+                        .negativeAction(getResources().getString(R.string.cancel));
+
+                DialogFragment fragment = DialogFragment.newInstance(builder);
+                fragment.show(getSupportFragmentManager(), null);
             }
         }
     }

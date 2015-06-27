@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_view_book"
-    android:scrollbars="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="wrap_content" >
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/list_view_book"
+        android:scrollbars="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <com.rey.material.widget.ProgressView
+            android:id="@+id/progress_pv_circular_inout_colors"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical|center_horizontal"
+            app:pv_autostart = "false"
+            app:pv_circular="true"
+            app:pv_progressStyle="@style/InOutColorsCircularProgressDrawableStyle"
+            app:pv_progressMode="indeterminate"/>
+    </FrameLayout>
+</RelativeLayout>

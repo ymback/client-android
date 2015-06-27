@@ -47,6 +47,10 @@
             android:name="me.ltype.lightniwa.activity.SettingActivity"
             android:label="@string/setting"
             android:theme="@style/AppTheme.Setting" />
+        <activity
+            android:name="me.ltype.lightniwa.activity.AboutUsActivity"
+            android:label="@string/about_us"
+            android:theme="@style/AppTheme.Setting" />
 
 
         <receiver

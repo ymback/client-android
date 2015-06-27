@@ -2,7 +2,6 @@ package me.ltype.lightniwa.adapter;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,14 +13,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import me.ltype.lightniwa.db.LightNiwaDataStore;
-import me.ltype.lightniwa.model.Volume;
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.ReadingActivity;
 import me.ltype.lightniwa.model.Chapter;
-import me.ltype.lightniwa.util.FileUtils;
 
 /**
  * Created by ltype on 2015/5/16.
@@ -33,7 +29,7 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
     private List<Chapter> chapterList = new ArrayList<>();
     private List<String> chapterIdList;
 
-    public ChapterListAdapter(Activity activity, String bookId, String volumeId) {
+    public ChapterListAdapter(Activity activity, String volumeId) {
         this.activity = activity;
 
         mResolver = activity.getContentResolver();
@@ -68,7 +64,7 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
 
     @Override
     public ChapterListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
-        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_chapter, parent, false);
+        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chapter, parent, false);
         ViewHolder vh = new ViewHolder(currentView);
         return vh;
     }

@@ -1419,10 +1419,8 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
             toolbarElevation = true;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // 4 dp elevation
-                Log.e("toolbarElevation", density + "");
                 toolbar.setElevation(4 * density);
-            }
-            /*else {
+            }/* else {
                 View elevation = LayoutInflater.from(this).inflate(R.layout.layout_toolbar_elevation,content, false);
                 content.addView(elevation);
             }*/
@@ -1435,8 +1433,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 // 4 dp elevation
                 toolbar.setElevation(0);
-            }
-            /*else {
+            }/* else {
                 View elevation = LayoutInflater.from(this).inflate(R.layout.layout_toolbar_elevation,content, false);
                 content.addView(elevation);
             }*/

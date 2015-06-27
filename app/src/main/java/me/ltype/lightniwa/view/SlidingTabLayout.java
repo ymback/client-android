@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 
+import me.ltype.lightniwa.R;
+
 /**
  * Created by ltype on 2015/5/14.
  */
@@ -143,6 +145,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
         TextView textView = new TextView(context);
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_VIEW_TEXT_SIZE_SP);
+        textView.setTextColor(getResources().getColor(R.color.abc_primary_text_material_dark));
         textView.setTypeface(Typeface.DEFAULT_BOLD);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

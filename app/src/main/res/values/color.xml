@@ -3,11 +3,18 @@
     <!-- use 700 -->
     <color name="color_primary_dark">#0288d1</color>
     <!-- use 500 -->
-    <color name="color_primary">#03a9f4</color>
-    <color name="color_accent">#e7e9fd</color>
+    <color name="color_primary">#03A9F4</color>
+    <color name="color_accent">#40C4FF</color>
 
-    <color name="windowBackgroundColor">#333333</color>
-    <color name="black_translucent">#80000000</color>
+    <!--<color name="windowBackgroundColor">#333333</color>
+    <color name="black_translucent">#80000000</color>-->
+
+    <color name="night_model_background">#212121</color>
+    <color name="night_model_text">#757575</color>
+
+    <color name="dashboard_background_color">#ffe1e1e0</color>
+    <color name="switchbar_background_color">#ff37474f</color>
+    <color name="switch_accent_color">#ff7fcac3</color>
 
     <integer-array name="gplus_colors">
         <item>@color/gplus_color_1</item>
@@ -21,6 +28,16 @@
     <color name="gplus_color_3">#427fed</color>
     <color name="gplus_color_4">#b23424</color>
 
-    <color name="night_model_background">#212121</color>
-    <color name="night_model_text">#757575</color>
+    <array name="progress_colors">
+        <item>#FF3F8AF8</item>
+        <item>#FFD8433C</item>
+        <item>#FFF2AF3A</item>
+        <item>#FF279B5E</item>
+    </array>
+
+    <array name="in_colors">
+        <item>#FFB5D4FF</item>
+        <item>#FFDEEAFC</item>
+        <item>#FFFAFFFE</item>
+    </array>
 </resources>

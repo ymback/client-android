@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -46,8 +48,8 @@ public class LightNiwaDataProvider extends ContentProvider implements SQLiteData
     @Override
     public boolean onCreate() {
         final Context context = getContext();
-        mHandler = new Handler(Looper.getMainLooper());
         mDatabaseWrapper = new SQLiteDatabaseWrapper(this);
+        mHandler = new Handler(Looper.getMainLooper());
         final LightNiwaApplication app = LightNiwaApplication.getInstance(context);
         return true;
     }

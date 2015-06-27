@@ -69,7 +69,7 @@ public class ApiUtil {
 		Volume volume = new Volume();
 		volume.setIndex(json.getString("vol_number"));
 		volume.setBookId(json.getString("series_id"));
-		volume.setId(json.getString("id"));
+		volume.setId(json.getString("id") != null ? json.getString("id") : json.getString("vol_id"));
 		volume.setHeader(json.getString("vol_number"));
 		volume.setName(json.getString("vol_title"));
 		volume.setCover(json.getString("vol_cover"));

@@ -1,28 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- use 700 -->
-    <color name="color_primary_dark">#0288d1</color>
-    <!-- use 500 -->
+    <!--<color name="color_primary_dark">#0288d1</color>
+    &lt;!&ndash; use 500 &ndash;&gt;
     <color name="color_primary">#03a9f4</color>
-    <color name="color_accent">#e7e9fd</color>
+    <color name="color_accent">#e7e9fd</color>-->
 
     <!--<color name="windowBackgroundColor">#333333</color>-->
     <!--<color name="black_translucent">#80000000</color>-->
 
-    <integer-array name="gplus_colors">
-        <item>@color/gplus_color_1</item>
-        <item>@color/gplus_color_2</item>
-        <item>@color/gplus_color_3</item>
-        <item>@color/gplus_color_4</item>
-    </integer-array>
 
-    <color name="gplus_color_1">#3e802f</color>
-    <color name="gplus_color_2">#f4b400</color>
-    <color name="gplus_color_3">#427fed</color>
-    <color name="gplus_color_4">#b23424</color>
-
-
-    <color name="dashboard_background_color">#ffe1e1e0</color>
+    <!--<color name="dashboard_background_color">#ffe1e1e0</color>
     <color name="switchbar_background_color">#ff37474f</color>
-    <color name="switch_accent_color">#ff7fcac3</color>
+    <color name="switch_accent_color">#ff7fcac3</color>-->
 </resources>

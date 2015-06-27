@@ -26,10 +26,12 @@ import com.rey.material.app.DialogFragment;
 import com.rey.material.app.SimpleDialog;
 import com.rey.material.widget.ProgressView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.MainActivity;
 import me.ltype.lightniwa.constant.Constants;
 import me.ltype.lightniwa.fragment.VolumeFragment;
@@ -38,12 +40,11 @@ import me.ltype.lightniwa.model.Volume;
 import me.ltype.lightniwa.request.DownloadRequest;
 import me.ltype.lightniwa.util.ApiUtil;
 import me.ltype.lightniwa.util.Util;
-import me.ltype.lightniwa.R;
 
 /**
  * Created by ltype on 2015/5/16.
  */
-public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.ViewHolder> {
+public class PopularAdapter extends RecyclerView.Adapter<PopularAdapter.ViewHolder> {
     private static String LOG_TAG = "LastUpdateAdapter";
     private LayoutInflater inflater;
     private MainActivity mActivity;
@@ -68,7 +69,7 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
         }
     };
 
-    public LastUpdateAdapter(Activity activity, Fragment fragment) {
+    public PopularAdapter(Activity activity, Fragment fragment) {
         this.mActivity = (MainActivity) activity;
         this.inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mQueue = Volley.newRequestQueue(activity);
@@ -80,26 +81,27 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
         if (Util.isConnect(mActivity)) {
             StringRequest stringRequest = new StringRequest(
                     Request.Method.GET,
-                    ApiUtil.API_PATH + "latestPost",
+                    "http://ltype.me/api/v1/popular",
                     response -> {
-                        JSONArray jsonArray = JSON.parseObject(response).getJSONArray("latestPost");
+                        JSONArray jsonArray = JSON.parseArray(response);
                         for (int i = 0; i < jsonArray.size(); i++) {
                             JSONObject json = jsonArray.getJSONObject(i);
                             Volume volume = new Volume();
                             volume.setIndex(json.getString("vol_number"));
-                            volume.setBookId(json.getString("series_id"));
-                            volume.setId(json.getString("id"));
-                            volume.setHeader(json.getString("vol_number"));
-                            volume.setName(json.getString("vol_title"));
-                            volume.setCover(json.getString("vol_cover"));
-                            volume.setDescription(json.getString("vol_desc"));
+                            volume.setBookId(json.getString("book_id"));
+                            volume.setId(json.getString("volume_id"));
+                            volume.setHeader(json.getString("volume_index"));
+                            volume.setName(json.getString("volume_name"));
+                            volume.setCover(json.getString("volume_cover"));
+                            volume.setDescription(json.getString("volume_description"));
                             volumeList.add(volume);
 
                             Book book = new Book();
-                            book.setId(json.getString("series_id"));
-                            book.setAuthor(json.getString("novel_author"));
-                            book.setIllustrator(json.getString("novel_illustor"));
-                            book.setName(json.getString("novel_title"));
+                            book.setId(json.getString("book_id"));
+                            book.setAuthor(json.getString("author"));
+                            book.setIllustrator(json.getString("illustrator"));
+                            book.setPublisher(json.getString("publisher"));
+                            book.setName(json.getString("book_name"));
                             bookList.add(book);
                         }
                         notifyDataSetChanged();
@@ -129,26 +131,31 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
     }
 
     @Override
-    public LastUpdateAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
-        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_other_book, parent, false);
+    public PopularAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
+        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_book, parent, false);
         ViewHolder vh = new ViewHolder(currentView);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
-        SimpleDraweeView simpleDraweeView = (SimpleDraweeView) viewHolder.mView.findViewById(R.id.card_other_book_cover);
-        TextView bookName = (TextView) viewHolder.mView.findViewById(R.id.card_other_book_name);
-        TextView volumeIndex = (TextView) viewHolder.mView.findViewById(R.id.card_other_volume_index);
-        TextView volumeName = (TextView) viewHolder.mView.findViewById(R.id.card_other_volume_name);
-        TextView author = (TextView) viewHolder.mView.findViewById(R.id.card_other_book_author);
+        SimpleDraweeView simpleDraweeView = (SimpleDraweeView) viewHolder.mView.findViewById(R.id.book_card_cover);
+        TextView bookName = (TextView) viewHolder.mView.findViewById(R.id.book_card_name);
+        TextView author = (TextView) viewHolder.mView.findViewById(R.id.book_card_author);
+        TextView illustrator = (TextView) viewHolder.mView.findViewById(R.id.book_card_illustrator);
+        TextView publisher = (TextView) viewHolder.mView.findViewById(R.id.book_card_publisher);
 
-        simpleDraweeView.setImageURI(Uri.parse(Constants.SITE + volumeList.get(position).getCover()));
+        File imgFile = new  File(Constants.BOOK_DIR + File.separator + bookList.get(position).getId() + bookList.get(position).getCover());
+        if(imgFile.exists()){
+            simpleDraweeView.setImageURI(Uri.parse("file://" + imgFile.getAbsolutePath()));
+        } else {
+            simpleDraweeView.setImageURI(Uri.parse(Constants.SITE + volumeList.get(position).getCover()));
+        }
 
         bookName.setText(bookList.get(position).getName());
-        volumeIndex.setText("第" + volumeList.get(position).getHeader() + "卷");
-        volumeName.setText(volumeList.get(position).getName());
         author.setText(bookList.get(position).getAuthor());
+        illustrator.setText(bookList.get(position).getIllustrator());
+        publisher.setText(bookList.get(position).getPublisher());
 
         viewHolder.mView.setOnClickListener(view -> {
             VolumeFragment volumeFragment = new VolumeFragment();
@@ -159,19 +166,20 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
         viewHolder.mView.setLongClickable(true);
         viewHolder.mView.setOnLongClickListener(view -> {
             com.rey.material.app.Dialog.Builder builder = null;
-            builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+            builder = new SimpleDialog.Builder(R.style.SimpleDialogLight) {
                 @Override
                 public void onPositiveActionClicked(DialogFragment fragment) {
                     startDown(volumeList.get(position), bookList.get(position));
                     super.onPositiveActionClicked(fragment);
                 }
+
                 @Override
                 public void onNegativeActionClicked(DialogFragment fragment) {
                     super.onNegativeActionClicked(fragment);
                 }
             };
 
-            ((SimpleDialog.Builder)builder).message("<<" + bookList.get(position).getName() + ">>\n第" + volumeList.get(position).getHeader() + "卷:" + volumeList.get(position).getName())
+            ((SimpleDialog.Builder) builder).message("<<" + bookList.get(position).getName() + ">>\n" + volumeList.get(position).getHeader() + ":" + volumeList.get(position).getName())
                     .title("下载")
                     .positiveAction("确定")
                     .negativeAction("取消");

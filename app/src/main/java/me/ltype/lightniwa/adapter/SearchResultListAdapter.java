@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,13 +23,16 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.rey.material.app.DialogFragment;
+import com.rey.material.app.SimpleDialog;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightniwa.constant.Constants;
+import me.ltype.lightniwa.fragment.VolumeFragment;
 import me.ltype.lightniwa.model.Book;
 import me.ltype.lightniwa.model.Volume;
 import me.ltype.lightniwa.request.DownloadRequest;
@@ -43,10 +47,9 @@ import me.ltype.lightniwa.util.Util;
 public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultListAdapter.ViewHolder> {
     private static String LOG_TAG = "SearchResultListAdapter";
     private LayoutInflater inflater;
-    private MainActivity activity;
+    private MainActivity mActivity;
     private List<Book>  bookList = new ArrayList<>();
     private List<Volume>  volumeList = new ArrayList<>();
-    private MaterialDialog mMaterialDialog;
     private ProgressDialog progress;
     private ProgressDialog progressBar;
     private RequestQueue mQueue;
@@ -54,7 +57,6 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
     private Handler mHandler = new Handler(){
         public void handleMessage(android.os.Message msg) {
             if(msg.what == Constants.PROGRESS_CANCEL){
-                Log.e(LOG_TAG, "handleMessage");
                 if (progress != null && progress.isShowing())
                     progress.dismiss();
                 if (progressBar != null && progressBar.isShowing())
@@ -64,7 +66,7 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
     };
 
     public SearchResultListAdapter(Activity activity, String query) {
-        this.activity = (MainActivity) activity;
+        this.mActivity = (MainActivity) activity;
         this.inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mQueue = Volley.newRequestQueue(activity);
         progress = new ProgressDialog(activity);
@@ -90,10 +92,7 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
                         notifyDataSetChanged();
                         mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                     },
-                    error -> {
-                        Log.e("TAG", error.getMessage(), error);
-                        mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
-                }) {
+                    error -> mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL)) {
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         return ApiUtil.getApiHeader();
@@ -115,49 +114,57 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
 
     @Override
     public SearchResultListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
-        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_other_book, parent, false);
+        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_other_book, parent, false);
         ViewHolder vh = new ViewHolder(currentView);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
-        ImageView imageView = (ImageView) viewHolder.mView.findViewById(R.id.card_other_book_cover);
+    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
+        SimpleDraweeView simpleDraweeView = (SimpleDraweeView) viewHolder.mView.findViewById(R.id.card_other_book_cover);
         TextView bookName = (TextView) viewHolder.mView.findViewById(R.id.card_other_book_name);
         TextView volumeIndex = (TextView) viewHolder.mView.findViewById(R.id.card_other_volume_index);
         TextView volumeName = (TextView) viewHolder.mView.findViewById(R.id.card_other_volume_name);
         TextView author = (TextView) viewHolder.mView.findViewById(R.id.card_other_book_author);
 
-        ImageLoader imageLoader = new ImageLoader(mQueue, new ImageLoader.ImageCache() {
-            @Override
-            public void putBitmap(String url, Bitmap bitmap) {
-            }
+        simpleDraweeView.setImageURI(Uri.parse(Constants.SITE + volumeList.get(position).getCover()));
 
-            @Override
-            public Bitmap getBitmap(String url) {
-                return null;
-            }
-        });
-        ImageLoader.ImageListener listener = ImageLoader.getImageListener(imageView, R.drawable.load_default, R.drawable.load_failed);
-        imageLoader.get(Constants.SITE + volumeList.get(i).getCover(), listener);
-
-        bookName.setText(bookList.get(i).getName());
-        volumeIndex.setText("第" + volumeList.get(i).getHeader() + "卷");
-        volumeName.setText(volumeList.get(i).getName());
-        author.setText(bookList.get(i).getAuthor());
+        bookName.setText(bookList.get(position).getName());
+        volumeIndex.setText("第" + volumeList.get(position).getHeader() + "卷");
+        volumeName.setText(volumeList.get(position).getName());
+        author.setText(bookList.get(position).getAuthor());
 
         viewHolder.mView.setOnClickListener(view -> {
-            mMaterialDialog = new MaterialDialog(view.getContext())
-                    .setTitle("下载")
-                    .setMessage("<<" + bookList.get(i).getName() + ">>\n第" + volumeList.get(i).getHeader() + "卷:" + volumeList.get(i).getName())
-                    .setPositiveButton("确定", v -> {
-                        startDown(volumeList.get(i), bookList.get(i));
-                        mMaterialDialog.dismiss();
-                    })
-                    .setNegativeButton("取消", v -> {
-                        mMaterialDialog.dismiss();
-                    });
-            mMaterialDialog.show();
+            VolumeFragment volumeFragment = new VolumeFragment();
+            mActivity.getIntent().putExtra("bookId", bookList.get(position).getId());
+            mActivity.setFragmentChild(volumeFragment, bookList.get(position).getName());
+        });
+
+
+        viewHolder.mView.setLongClickable(true);
+        viewHolder.mView.setOnLongClickListener(view -> {
+            com.rey.material.app.Dialog.Builder builder = null;
+            builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+                @Override
+                public void onPositiveActionClicked(DialogFragment fragment) {
+                    startDown(volumeList.get(position), bookList.get(position));
+                    super.onPositiveActionClicked(fragment);
+                }
+
+                @Override
+                public void onNegativeActionClicked(DialogFragment fragment) {
+                    super.onNegativeActionClicked(fragment);
+                }
+            };
+
+            ((SimpleDialog.Builder)builder).message("<<" + bookList.get(position).getName() + ">>\n第" + volumeList.get(position).getHeader() + "卷:" + volumeList.get(position).getName())
+                    .title("下载")
+                    .positiveAction("确定")
+                    .negativeAction("取消");
+
+            DialogFragment fragment = DialogFragment.newInstance(builder);
+            fragment.show(mActivity.getSupportFragmentManager(), null);
+            return true;
         });
     }
 
@@ -177,6 +184,6 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
         progressBar.setIndeterminate(true);
         progressBar.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressBar.show();
-        new DownloadRequest(activity, mQueue, mHandler).downBook(volume.getId());
+        new DownloadRequest(mActivity, mQueue, mHandler).downBook(volume.getId());
     }
 }

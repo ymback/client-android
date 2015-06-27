@@ -1,8 +1,23 @@
 <resources>
+    <style name="SimpleDialogLight" parent="Material.App.Dialog.Simple.Light">
+        <item name="di_inAnimation">@anim/anim_scale_in</item>
+        <item name="di_outAnimation">@anim/anim_scale_out</item>
+    </style>
+
+    <style name="InOutColorsCircularProgressDrawableStyle" parent="Material.Drawable.CircularProgress">
+        <item name="cpd_inAnimDuration">800</item>
+        <item name="cpd_inStepPercent">0.5</item>
+        <item name="cpd_inStepColors">@array/in_colors</item>
+        <item name="cpd_outAnimDuration">400</item>
+        <item name="cpd_strokeColors">@array/progress_colors</item>
+    </style>
+
     <style name="AppTheme" parent="AppTheme.Base">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryDark">@color/color_primary_dark</item>
         <item name="colorAccent">@color/color_accent</item>
+        <item name="multipaneSupport">true</item>
+        <item name="singleAccount">true</item>
     </style>
 
     <style name="AppTheme.Setting" parent="Theme.AppCompat.Light.DarkActionBar" >
@@ -12,17 +27,26 @@
 
     </style>
 
-    <style name="AppTheme.Base" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
-        <item name="singleAccount">true</item>
+    <style name="AppTheme.Base" parent="AppTheme.ToolBar">
+        <!--<item name="singleAccount">true</item>
         <item name="drawerType">@integer/DRAWERTYPE_ACCOUNTS</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
+        <item name="windowActionBar">false</item>-->
         <!--<item name="multipaneSupport">true</item>-->
         <!--<item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
 
     </style>
 
-    <style name="AppTheme.Tab" parent="AppTheme.Base">
+    <style name="AppTheme.ToolBar" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+
+    </style>
+
+    <style name="AppTheme.Tab" parent="AppTheme.ToolBar">
+
         <item name="android:textColor">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimary">@color/abc_primary_text_material_dark</item>
+        <item name="android:textColorPrimaryInverse">@color/abc_primary_text_material_dark</item>
     </style>
 </resources>

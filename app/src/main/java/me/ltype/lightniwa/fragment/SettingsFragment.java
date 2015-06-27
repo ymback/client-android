@@ -1,28 +1,24 @@
 package me.ltype.lightniwa.fragment;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.rey.material.app.DialogFragment;
+import com.rey.material.app.SimpleDialog;
 
 import java.io.File;
 
-import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightniwa.constant.Constants;
 import me.ltype.lightniwa.util.FileUtils;
 import me.ltype.lightniwa.R;
+
+import static me.ltype.lightniwa.util.Util.checkUpdate;
 
 /**
  * Created by ltype on 2015/6/2.
@@ -37,8 +33,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     private Preference checkVersionPre;
     private Preference clearCachePre;
     private Preference clearDataPre;
-
-    private MaterialDialog mMaterialDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -69,41 +63,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         clearCachePre.setOnPreferenceChangeListener(this);
         clearDataPre.setOnPreferenceClickListener(this);
         clearDataPre.setOnPreferenceChangeListener(this);
-
-
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (preference.getKey().equals(getString(R.string.setting_check_version))) {
-            RequestQueue mQueue = Volley.newRequestQueue(getActivity());
-            StringRequest checkReq = new StringRequest(
-                    Request.Method.GET,
-                    "http://ltype.me/api/v1/checkUpdate",
-                    response -> {
-                        try {
-                            if (JSON.parseObject(response).getInteger("versionCode") > getActivity().getPackageManager().getPackageInfo("me.ltype.lightniwa", 0).versionCode){
-                                mMaterialDialog = new MaterialDialog(getActivity())
-                                        .setTitle("检查更新")
-                                        .setMessage("有新版本，是否更新？")
-                                        .setPositiveButton("确定", v -> {
-                                            mMaterialDialog.dismiss();
-                                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(JSON.parseObject(response).getString("url")));
-                                            startActivity(intent);
-                                        })
-                                        .setNegativeButton("取消", v -> {
-                                            mMaterialDialog.dismiss();
-                                        });
-                                mMaterialDialog.show();
-                            } else {
-                                Toast.makeText(getActivity(), "已是最新版本", Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (PackageManager.NameNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                    },
-                    error -> Toast.makeText(getActivity(), "服务器连接失败", Toast.LENGTH_SHORT).show());
-            mQueue.add(checkReq);
+            checkUpdate(getActivity(), true);
             return true;
         } else if (preference.getKey().equals(getString(R.string.setting_clear_cache))) {
             File cacheDir = getActivity().getCacheDir();
@@ -116,11 +81,11 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             }
             return true;
         } else if (preference.getKey().equals(getString(R.string.setting_clear_data))) {
-            mMaterialDialog = new MaterialDialog(getActivity())
-                .setTitle("清空数据")
-                .setMessage("删除所有书籍")
-                .setPositiveButton("确定", v -> {
-                    mMaterialDialog.dismiss();
+            com.rey.material.app.Dialog.Builder builder = null;
+            builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+                @Override
+                public void onPositiveActionClicked(DialogFragment fragment) {
+                    super.onPositiveActionClicked(fragment);
                     File bookDir = new File(Constants.BOOK_DIR);
                     if (bookDir != null && bookDir.isDirectory()) {
                         ProgressDialog progressBar = new ProgressDialog(getActivity());
@@ -138,11 +103,22 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                             Toast.makeText(getActivity(), "未成功删除数据", Toast.LENGTH_SHORT).show();
                         }
                     }
-                })
-                .setNegativeButton("取消", v -> {
-                    mMaterialDialog.dismiss();
-                });
-            mMaterialDialog.show();
+                }
+
+                @Override
+                public void onNegativeActionClicked(DialogFragment fragment) {
+                    super.onNegativeActionClicked(fragment);
+                }
+            };
+
+            ((SimpleDialog.Builder)builder).message("删除所有书籍")
+                    .title("清空数据")
+                    .positiveAction("确定")
+                    .negativeAction("取消");
+
+            DialogFragment fragment = DialogFragment.newInstance(builder);
+            ActionBarActivity mActivity = (ActionBarActivity) getActivity();
+            fragment.show(mActivity.getSupportFragmentManager(), null);
             return true;
         }
         return false;

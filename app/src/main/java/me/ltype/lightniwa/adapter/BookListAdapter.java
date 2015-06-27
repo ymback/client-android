@@ -4,22 +4,24 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.rey.material.app.Dialog;
+import com.rey.material.app.DialogFragment;
+import com.rey.material.app.SimpleDialog;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightniwa.activity.MainActivity;
 import me.ltype.lightniwa.constant.Constants;
 import me.ltype.lightniwa.db.LightNiwaDataStore.Books;
@@ -33,13 +35,12 @@ import me.ltype.lightniwa.R;
 /**
  * Created by ltype on 2015/5/16.
  */
-public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHolder> {
+public class BookListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static String LOG_TAG = "BookListAdapter";
     private LayoutInflater inflater;
     private ContentResolver mResolver;
     private MainActivity mActivity;
     private List<Book> bookList = new ArrayList<>();
-    private MaterialDialog mMaterialDialog;
 
     public  BookListAdapter (Activity activity) {
         this.mActivity = (MainActivity) activity;
@@ -64,72 +65,82 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.ViewHo
         }
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class BookViewHolder extends RecyclerView.ViewHolder {
         public View mView;
-        public ViewHolder(View v) {
+        public BookViewHolder(View v) {
             super(v);
             mView = v;
         }
     }
 
     @Override
-    public BookListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, final int i) {
-        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_book, parent, false);
-        ViewHolder vh = new ViewHolder(currentView);
-        return vh;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType) {
+        View currentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_book, parent, false);
+        BookViewHolder bookViewHolder = new BookViewHolder(currentView);
+        return bookViewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int i) {
-        ImageView imageView = (ImageView) viewHolder.mView.findViewById(R.id.book_card_cover);
-        File imgFile = new  File(Constants.BOOK_DIR + File.separator + bookList.get(i).getId() + bookList.get(i).getCover());
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
+        BookViewHolder bookViewHolder = (BookViewHolder) viewHolder;
+        SimpleDraweeView simpleDraweeView = (SimpleDraweeView) bookViewHolder.mView.findViewById(R.id.book_card_cover);
+        TextView name = (TextView) bookViewHolder.mView.findViewById(R.id.book_card_name);
+        TextView author = (TextView) bookViewHolder.mView.findViewById(R.id.book_card_author);
+        TextView illustrator = (TextView) bookViewHolder.mView.findViewById(R.id.book_card_illustrator);
+        TextView publisher = (TextView) bookViewHolder.mView.findViewById(R.id.book_card_publisher);
+
+        File imgFile = new  File(Constants.BOOK_DIR + File.separator + bookList.get(position).getId() + bookList.get(position).getCover());
         if(imgFile.exists()){
-            Bitmap mBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-            imageView.setImageBitmap(mBitmap);
+            simpleDraweeView.setImageURI(Uri.parse("file://" + imgFile.getAbsolutePath()));
         }
 
-        TextView name = (TextView) viewHolder.mView.findViewById(R.id.book_card_name);
-        name.setText(bookList.get(i).getName());
+        name.setText(bookList.get(position).getName());
+        author.setText(bookList.get(position).getAuthor());
+        illustrator.setText(bookList.get(position).getIllustrator());
+        publisher.setText(bookList.get(position).getPublisher());
 
-        TextView author = (TextView) viewHolder.mView.findViewById(R.id.book_card_author);
-        author.setText(bookList.get(i).getAuthor());
-
-        viewHolder.mView.setClickable(true);
-        viewHolder.mView.setOnClickListener(view -> {
-            mActivity.getIntent().putExtra("bookId", bookList.get(i).getId());
-            mActivity.setFragmentChild(new VolumeFragment(), bookList.get(i).getName());
+        bookViewHolder.mView.setClickable(true);
+        bookViewHolder.mView.setOnClickListener(view -> {
+            mActivity.getIntent().putExtra("bookId", bookList.get(position).getId());
+            mActivity.setFragmentChild(new VolumeFragment(), bookList.get(position).getName());
         });
-        viewHolder.mView.setLongClickable(true);
-        viewHolder.mView.setOnLongClickListener(v -> {
-            mMaterialDialog = new MaterialDialog(mActivity)
-                    .setTitle("删除")
-                    .setMessage(bookList.get(i).getName())
-                    .setPositiveButton("确定", v1 -> {
-                        File bookDir = new File(Constants.BOOK_DIR + File.separator + bookList.get(i).getId());
-                        if (bookDir != null && bookDir.isDirectory()) {
-                            if (FileUtils.delFolder(bookDir, System.currentTimeMillis())) {
-                                mResolver.delete(Books.CONTENT_URI, Books.BOOK_ID + "=?", new String[]{bookList.get(i).getId()});
-                                mResolver.delete(Volumes.CONTENT_URI, Volumes.BOOK_ID + "=?", new String[]{bookList.get(i).getId()});
-                                mResolver.delete(Chapters.CONTENT_URI, Chapters.BOOK_ID + "=?", new String[]{bookList.get(i).getId()});
-                                bookList.remove(i);
-                                notifyDataSetChanged();
-                                Toast.makeText(mActivity, "操作成功", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(mActivity, "未成功删除数据", Toast.LENGTH_SHORT).show();
-                            }
+        bookViewHolder.mView.setLongClickable(true);
+        bookViewHolder.mView.setOnLongClickListener(v -> {
+            com.rey.material.app.Dialog.Builder builder = null;
+            builder = new SimpleDialog.Builder(R.style.SimpleDialogLight){
+                @Override
+                public void onPositiveActionClicked(DialogFragment fragment) {
+                    File bookDir = new File(Constants.BOOK_DIR + File.separator + bookList.get(position).getId());
+                    if (bookDir != null && bookDir.isDirectory()) {
+                        if (FileUtils.delFolder(bookDir, System.currentTimeMillis())) {
+                            mResolver.delete(Books.CONTENT_URI, Books.BOOK_ID + "=?", new String[]{bookList.get(position).getId()});
+                            mResolver.delete(Volumes.CONTENT_URI, Volumes.BOOK_ID + "=?", new String[]{bookList.get(position).getId()});
+                            mResolver.delete(Chapters.CONTENT_URI, Chapters.BOOK_ID + "=?", new String[]{bookList.get(position).getId()});
+                            bookList.remove(position);
+                            notifyDataSetChanged();
+                            Toast.makeText(mActivity, "操作成功", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(mActivity, "未成功删除数据", Toast.LENGTH_SHORT).show();
                         }
-                        mMaterialDialog.dismiss();
-                    })
-                    .setNegativeButton("取消", v1 -> {
-                        mMaterialDialog.dismiss();
-                    });
-            mMaterialDialog.show();
+                    }
+                    super.onPositiveActionClicked(fragment);
+                }
+
+                @Override
+                public void onNegativeActionClicked(DialogFragment fragment) {
+                    super.onNegativeActionClicked(fragment);
+                }
+            };
+
+            ((SimpleDialog.Builder)builder).message(bookList.get(position).getName())
+                    .title("删除")
+                    .positiveAction("确定")
+                    .negativeAction("取消");
+
+            DialogFragment fragment = DialogFragment.newInstance(builder);
+            fragment.show(mActivity.getSupportFragmentManager(), null);
             return true;
         });
-    }
-    @Override
-    public long getItemId(int i) {
-        return Long.getLong(bookList.get(i).getId());
     }
 
     @Override

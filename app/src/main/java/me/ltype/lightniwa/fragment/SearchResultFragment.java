@@ -1,6 +1,7 @@
 package me.ltype.lightniwa.fragment;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.MainActivity;
 import me.ltype.lightniwa.adapter.SearchResultListAdapter;
+import me.ltype.lightniwa.adapter.VolumeListAdapter;
 
 /**
  * Created by ltype on 2015/5/14.
@@ -33,14 +35,18 @@ public class SearchResultFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        mRecyclerView = (RecyclerView) inflater.inflate(R.layout.list_view, container, false);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(inflater.getContext());
-        mRecyclerView.setLayoutManager(mLayoutManager);
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         mAdapter = new SearchResultListAdapter(getActivity(), query);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(view.getContext());
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
-        return mRecyclerView;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.list_view, container, false);
     }
 }

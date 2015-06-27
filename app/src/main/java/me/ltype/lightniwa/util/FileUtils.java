@@ -465,15 +465,16 @@ public class FileUtils {
     }
 
     public static boolean delFolder(File dir, long curTime) {
+        boolean result = false;
         try {
             clearFolder(dir, curTime);
             final File to = new File(dir.getAbsolutePath() + System.currentTimeMillis());
             dir.renameTo(to);
-            to.delete();
+            result = to.delete();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
+        return result;
     }
 
     public static int clearFolder(File dir, long curTime) {

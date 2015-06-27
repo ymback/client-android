@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import me.drakeet.materialdialog.MaterialDialog;
 import me.ltype.lightniwa.adapter.ReadListAdapter;
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.db.LightNiwaDataStore.Bookmarks;
@@ -34,7 +33,6 @@ public class ReadActivity  extends ActionBarActivity implements View.OnTouchList
     private List<String> chapterIdList;
     private SharedPreferences sharedPreferences;
 
-    private MaterialDialog mMaterialDialog;
     private ContentResolver mResolver;
     private long lastTouchTime = 0;
 
@@ -130,7 +128,7 @@ public class ReadActivity  extends ActionBarActivity implements View.OnTouchList
                 mRecyclerView.scrollToPosition(cursor.getInt(0));
                 Toast.makeText(getApplicationContext(), "已载入书签", Toast.LENGTH_SHORT).show();
             } else {
-                mMaterialDialog = new MaterialDialog(this)
+                /*mMaterialDialog = new MaterialDialog(this)
                         .setTitle(getResources().getString(R.string.bookmarks))
                         .setMessage(getResources().getString(R.string.continue_read))
                         .setPositiveButton(getResources().getString(R.string.ok), v -> {
@@ -140,7 +138,7 @@ public class ReadActivity  extends ActionBarActivity implements View.OnTouchList
                         .setNegativeButton(getResources().getString(R.string.cancel), v -> {
                             mMaterialDialog.dismiss();
                         });
-                mMaterialDialog.show();
+                mMaterialDialog.show();*/
             }
         }
     }

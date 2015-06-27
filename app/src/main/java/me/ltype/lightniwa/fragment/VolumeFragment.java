@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,18 +40,19 @@ public class VolumeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        mAdapter = new BookListAdapter(getActivity());
+        mAdapter = new VolumeListAdapter(getActivity(), this);
         mAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view;
+        mAdapter = new VolumeListAdapter(getActivity(), this);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(view.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(new VolumeListAdapter(mActivity));
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
