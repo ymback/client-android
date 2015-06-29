@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +32,13 @@ public class SearchResultFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mActivity = (MainActivity) getActivity();
         mActivity.enableToolbarElevation();
-        this.query = getActivity().getIntent().getStringExtra("query");
+        this.query = getArguments().getString("query");
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAdapter = new SearchResultListAdapter(getActivity(), query);
+        mAdapter = new SearchResultListAdapter(mActivity, query);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(view.getContext());

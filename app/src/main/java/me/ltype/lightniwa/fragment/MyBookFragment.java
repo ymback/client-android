@@ -61,6 +61,7 @@ public class MyBookFragment extends Fragment {
         DialogFragment fragment = DialogFragment.newInstance(builder);
         fragment.show(getActivity().getSupportFragmentManager(), null);*/
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
+        mRecyclerView.setTranslationX(0);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

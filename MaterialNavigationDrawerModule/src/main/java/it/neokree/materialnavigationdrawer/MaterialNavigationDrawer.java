@@ -998,6 +998,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
                 break;
             case MaterialSection.TARGET_ACTIVITY:
                 this.startActivity(section.getTargetIntent());
+                overridePendingTransition(R.anim.slide_right_in, R.anim.slide_left_out);
                 if (!deviceSupportMultiPane())
                     layout.closeDrawer(drawer);
                 break;
@@ -1055,6 +1056,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
 
             if(!hasSavedInstanceState) {
                 android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
                 if (oldFragment != null && oldFragment != fragment)
                     ft.remove((android.support.v4.app.Fragment) oldFragment);
 
@@ -1068,6 +1070,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
             if(!hasSavedInstanceState) {// se non e' avvenuta una rotazione
 
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
                 if (oldFragment != null && fragment != oldFragment)
                     ft.remove((android.app.Fragment) oldFragment);
 
@@ -1079,6 +1082,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
                 throw new RuntimeException("You should use only one type of Fragment");
 
             android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             if(oldFragment != null && oldFragment != fragment)
                 ft.remove((android.support.v4.app.Fragment) oldFragment);
 
@@ -1360,6 +1364,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
                 break;
             case MaterialSection.TARGET_ACTIVITY:
                 this.startActivity(section.getTargetIntent());
+                overridePendingTransition(R.anim.slide_right_in, R.anim.slide_left_out);
                 if (!deviceSupportMultiPane())
                     layout.closeDrawer(drawer);
                 break;

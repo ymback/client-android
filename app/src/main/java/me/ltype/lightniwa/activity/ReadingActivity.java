@@ -99,6 +99,12 @@ public class ReadingActivity extends ActionBarActivity {
         storeBookmarks(mBundle.getInt("chapterIndex"));
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.slide_left_in, R.anim.slide_right_out);
+    }
+
     private boolean checkTouchTime() {
         if(lastTouchTime + 2000 <= System.currentTimeMillis()) {
             lastTouchTime = System.currentTimeMillis();

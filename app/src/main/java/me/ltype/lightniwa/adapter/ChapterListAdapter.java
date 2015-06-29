@@ -84,6 +84,7 @@ public class ChapterListAdapter extends RecyclerView.Adapter<ChapterListAdapter.
             bundle.putStringArrayList("chapterIdList", (ArrayList<String>) chapterIdList);
             intent.putExtras(bundle);
             viewHolder.mView.getContext().startActivity(intent);
+            activity.overridePendingTransition(R.anim.slide_right_in, R.anim.slide_left_out);
         });
 
     }
