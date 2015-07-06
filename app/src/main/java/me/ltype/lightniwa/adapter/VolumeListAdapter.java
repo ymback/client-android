@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,7 @@ import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.MainActivity;
 import me.ltype.lightniwa.fragment.ChapterFragment;
 import me.ltype.lightniwa.request.DownloadRequest;
+import me.ltype.lightniwa.util.AnimationUtil;
 import me.ltype.lightniwa.util.ApiUtil;
 import me.ltype.lightniwa.util.FileUtils;
 import me.ltype.lightniwa.util.Util;
@@ -61,6 +63,7 @@ public class VolumeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private ContentResolver mResolver;
     private MainActivity mActivity;
+    private Fragment mFragment;
     private ProgressDialog progressBar;
     private ProgressView pv_circular_inout_colors;
     private ItemViewHolder DLItemView = null;
@@ -83,21 +86,26 @@ public class VolumeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     });
                     DLItemView.mView.setAlpha(1);
                 }
-                if (pv_circular_inout_colors != null && pv_circular_inout_colors.isShown())
+                if (pv_circular_inout_colors != null && pv_circular_inout_colors.isShown()) {
                     pv_circular_inout_colors.stop();
+                    RecyclerView mRecyclerView = (RecyclerView) mFragment.getView().findViewById(R.id.list_view_book);
+                    mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mActivity, R.anim.layout_animation_list_view));
+                    notifyDataSetChanged();
+                }
             }
         }
     };
 
     public VolumeListAdapter(Activity activity, Fragment fragment) {
         this.mActivity = (MainActivity) activity;
+        this.mFragment = fragment;
         mResolver = mActivity.getContentResolver();
         progressBar = new ProgressDialog(mActivity);
         Bundle bundle = activity.getIntent().getExtras();
         String bookId = bundle.getString("bookId");
 
         if(Util.isConnect(mActivity)) {
-            pv_circular_inout_colors = (ProgressView) fragment.getView().findViewById(R.id.progress_pv_circular_inout_colors);
+            pv_circular_inout_colors = (ProgressView) mFragment.getView().findViewById(R.id.progress_pv_circular_inout_colors);
             pv_circular_inout_colors.start();
             StringRequest jsonObjectRequest = new StringRequest(
                     Request.Method.GET,
@@ -108,7 +116,6 @@ public class VolumeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             Volume volume = ApiUtil.getVolByJsonObj(jsonArray.getJSONObject(i));
                             volumeList.add(volume);
                         }
-                        notifyDataSetChanged();
                         mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                     },
                     error -> {
@@ -124,6 +131,7 @@ public class VolumeListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             Volley.newRequestQueue(mActivity).add(jsonObjectRequest);
         } else {
             loadDataByLocal(bookId);
+            mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
         }
     }
 

@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +37,7 @@ import me.ltype.lightniwa.fragment.VolumeFragment;
 import me.ltype.lightniwa.model.Book;
 import me.ltype.lightniwa.model.Volume;
 import me.ltype.lightniwa.request.DownloadRequest;
+import me.ltype.lightniwa.util.AnimationUtil;
 import me.ltype.lightniwa.util.ApiUtil;
 import me.ltype.lightniwa.util.Util;
 import me.ltype.lightniwa.R;
@@ -47,6 +49,7 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
     private static String LOG_TAG = "LastUpdateAdapter";
     private LayoutInflater inflater;
     private MainActivity mActivity;
+    private Fragment mFragment;
     private List<Book> bookList = new ArrayList<>();
     private List<Volume> volumeList = new ArrayList<>();
     private ProgressDialog progress;
@@ -62,14 +65,19 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
                     progress.dismiss();
                 if (progressBar != null && progressBar.isShowing())
                     progressBar.dismiss();
-                if (pv_circular_inout_colors != null && pv_circular_inout_colors.isShown())
+                if (pv_circular_inout_colors != null && pv_circular_inout_colors.isShown()) {
                     pv_circular_inout_colors.stop();
+                    RecyclerView mRecyclerView = (RecyclerView) mFragment.getView().findViewById(R.id.list_view_book);
+                    mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mActivity, R.anim.layout_animation_list_view));
+                    notifyDataSetChanged();
+                }
             }
         }
     };
 
     public LastUpdateAdapter(Activity activity, Fragment fragment) {
         this.mActivity = (MainActivity) activity;
+        this.mFragment = fragment;
         this.inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mQueue = Volley.newRequestQueue(activity);
         progress = new ProgressDialog(activity);
@@ -102,7 +110,6 @@ public class LastUpdateAdapter extends RecyclerView.Adapter<LastUpdateAdapter.Vi
                             book.setName(json.getString("novel_title"));
                             bookList.add(book);
                         }
-                        notifyDataSetChanged();
                         mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                     },
                     error -> {

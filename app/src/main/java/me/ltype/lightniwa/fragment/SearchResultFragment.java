@@ -14,6 +14,7 @@ import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.MainActivity;
 import me.ltype.lightniwa.adapter.SearchResultListAdapter;
 import me.ltype.lightniwa.adapter.VolumeListAdapter;
+import me.ltype.lightniwa.util.AnimationUtil;
 
 /**
  * Created by ltype on 2015/5/14.

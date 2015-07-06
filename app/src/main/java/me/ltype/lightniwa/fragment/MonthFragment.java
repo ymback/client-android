@@ -13,6 +13,7 @@ import com.rey.material.widget.ProgressView;
 
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.adapter.MonthAdapter;
+import me.ltype.lightniwa.util.AnimationUtil;
 
 /**
  * Created by ltype on 2015/6/14.

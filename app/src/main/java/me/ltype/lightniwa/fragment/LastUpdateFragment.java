@@ -12,6 +12,7 @@ import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.MainActivity;
 import me.ltype.lightniwa.adapter.BookListAdapter;
 import me.ltype.lightniwa.adapter.LastUpdateAdapter;
+import me.ltype.lightniwa.util.AnimationUtil;
 
 /**
  * Created by ltype on 2015/5/14.
@@ -35,7 +36,6 @@ public class LastUpdateFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
-//        mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new LastUpdateAdapter(getActivity(), this);
         mRecyclerView.setAdapter(mAdapter);

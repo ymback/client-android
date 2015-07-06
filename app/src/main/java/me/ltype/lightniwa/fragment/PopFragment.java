@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.adapter.PopularAdapter;
+import me.ltype.lightniwa.util.AnimationUtil;
 
 /**
  * Created by ltype on 2015/5/14.

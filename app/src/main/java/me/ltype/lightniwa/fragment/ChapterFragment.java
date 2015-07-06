@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import me.ltype.lightniwa.adapter.ChapterListAdapter;
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.adapter.VolumeListAdapter;
+import me.ltype.lightniwa.util.AnimationUtil;
 
 /**
  * Created by ltype on 2015/5/14.
@@ -49,9 +50,6 @@ public class ChapterFragment extends Fragment {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(view.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        /*if (savedInstanceState != null) {
-            volumeId = savedInstanceState.getString("volumeId");
-        }*/
         mRecyclerView.setAdapter(new ChapterListAdapter(getActivity(), volumeId));
     }
 }

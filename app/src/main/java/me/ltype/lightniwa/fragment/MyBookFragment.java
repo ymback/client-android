@@ -7,6 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +24,7 @@ import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.adapter.BookListAdapter;
 import me.ltype.lightniwa.constant.Constants;
 import me.ltype.lightniwa.db.LightNiwaDataStore;
+import me.ltype.lightniwa.util.AnimationUtil;
 import me.ltype.lightniwa.util.FileUtils;
 
 /**
@@ -60,8 +66,10 @@ public class MyBookFragment extends Fragment {
 
         DialogFragment fragment = DialogFragment.newInstance(builder);
         fragment.show(getActivity().getSupportFragmentManager(), null);*/
+
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
-        mRecyclerView.setTranslationX(0);
+//        mRecyclerView.setTranslationX(0);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

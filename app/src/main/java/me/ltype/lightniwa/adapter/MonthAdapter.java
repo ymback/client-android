@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +35,7 @@ import me.ltype.lightniwa.constant.Constants;
 import me.ltype.lightniwa.fragment.VolumeFragment;
 import me.ltype.lightniwa.model.Book;
 import me.ltype.lightniwa.R;
+import me.ltype.lightniwa.util.AnimationUtil;
 
 /**
  * Created by ltype on 2015/5/16.
@@ -40,6 +43,7 @@ import me.ltype.lightniwa.R;
 public class MonthAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static String LOG_TAG = "MonthAdapter";
     private MainActivity mActivity;
+    private Fragment mFragment;
     private RequestQueue mQueue;
     private ProgressView pv_circular_inout_colors;
 
@@ -49,19 +53,26 @@ public class MonthAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
 
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(android.os.Message msg) {
+            if(msg.what == Constants.PROGRESS_CANCEL){
+                if (pv_circular_inout_colors != null && pv_circular_inout_colors.isShown()) {
+                    pv_circular_inout_colors.stop();
+                    RecyclerView mRecyclerView = (RecyclerView) mFragment.getView().findViewById(R.id.list_view_book);
+                    mRecyclerView.setLayoutAnimation(AnimationUtils.loadLayoutAnimation(mActivity, R.anim.layout_animation_list_view));
+                    notifyDataSetChanged();
+                }
+            }
+        }
+    };
+
     public MonthAdapter(Activity activity, Fragment fragment, String month) {
         this.mActivity = (MainActivity) activity;
-        pv_circular_inout_colors = (ProgressView) fragment.getView().findViewById(R.id.progress_pv_circular_inout_colors);
+        this.mFragment = fragment;
+        pv_circular_inout_colors = (ProgressView) mFragment.getView().findViewById(R.id.progress_pv_circular_inout_colors);
         pv_circular_inout_colors.start();
         mQueue = Volley.newRequestQueue(mActivity);
-        /*
-        ContentResolver mResolver = mActivity.getContentResolver();
-        Cursor cursor = mResolver.query(LightNiwaDataStore.Bookmarks.CONTENT_URI, new String[]{LightNiwaDataStore.Bookmarks.POSITION},
-                LightNiwaDataStore.Bookmarks.CHAPTER_ID + " = " + chapterIdList.get(chapterIndex), null, null);
-        if (cursor != null && cursor.moveToFirst()){
-
-        }*/
-
         StringRequest jsonObjectRequest = new StringRequest(
                 Request.Method.GET,
                 "http://ltype.me/api/v1/anime/" + month,
@@ -79,17 +90,12 @@ public class MonthAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                         book.setCover(jsonObject.getString("book_cover"));
                         bookList.add(book);
                     }
-                    notifyDataSetChanged();
+                    mHandler.sendEmptyMessage(Constants.PROGRESS_CANCEL);
                 },
                 error -> {
                     Log.e(LOG_TAG, error.getMessage(), error);
                     Toast.makeText(activity, "网络错误", Toast.LENGTH_SHORT).show();
                 });
-        mQueue.addRequestFinishedListener(request -> {
-            if(pv_circular_inout_colors.isShown()) {
-                pv_circular_inout_colors.stop();
-            }
-        });
         mQueue.add(jsonObjectRequest);
     }
 

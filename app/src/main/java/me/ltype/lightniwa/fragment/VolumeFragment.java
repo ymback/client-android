@@ -18,6 +18,7 @@ import me.ltype.lightniwa.adapter.VolumeListAdapter;
 import me.ltype.lightniwa.model.Book;
 import me.ltype.lightniwa.R;
 import me.ltype.lightniwa.activity.MainActivity;
+import me.ltype.lightniwa.util.AnimationUtil;
 import me.ltype.lightniwa.util.FileUtils;
 
 /**
@@ -49,7 +50,7 @@ public class VolumeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mAdapter = new VolumeListAdapter(getActivity(), this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_book);
-        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(view.getContext());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
